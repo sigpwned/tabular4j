@@ -19,17 +19,23 @@
  */
 package com.sigpwned.spreadsheet4j.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.sigpwned.chardet4j.Chardet;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.io.CharSource;
 
 public class MoreChardet {
+  private static final int TEXT_BUF_LEN = 16384;
+
   public static CharSource decode(ByteSource source) {
     return new CharSource() {
       private Charset charset;
@@ -43,8 +49,16 @@ public class MoreChardet {
           if (charset != null) {
             result = new InputStreamReader(in, charset);
           } else {
-            result = Chardet.decode(in, StandardCharsets.UTF_8);
+            byte[] buf = in.readNBytes(TEXT_BUF_LEN);
+            if (buf.length == 0)
+              throw new EOFException();
+
+            result = Chardet.decode(new SequenceInputStream(new ByteArrayInputStream(buf), in),
+                StandardCharsets.UTF_8);
             charset = Charset.forName(result.getEncoding());
+
+            if (!isTextHeuristic(buf, charset))
+              throw new IOException("not text");
           }
         } finally {
           if (result == null)
@@ -54,5 +68,16 @@ public class MoreChardet {
         return result;
       }
     };
+  }
+
+  private static boolean isTextHeuristic(byte[] preview, Charset detectedCharset) {
+    final AtomicInteger alphanum = new AtomicInteger(0);
+    final AtomicInteger total = new AtomicInteger(0);
+    new String(preview, detectedCharset).codePoints().forEach(cp -> {
+      if (Character.isLetterOrDigit(cp))
+        alphanum.incrementAndGet();
+      total.incrementAndGet();
+    });
+    return alphanum.get() > total.get() / 2;
   }
 }
