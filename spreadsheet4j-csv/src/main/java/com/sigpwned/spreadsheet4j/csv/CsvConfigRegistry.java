@@ -1,80 +1,70 @@
+/*-
+ * =================================LICENSE_START==================================
+ * spreadsheet4j-csv
+ * ====================================SECTION=====================================
+ * Copyright (C) 2022 - 2023 Andy Boothe
+ * ====================================SECTION=====================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ==================================LICENSE_END===================================
+ */
 package com.sigpwned.spreadsheet4j.csv;
 
 import static java.util.Collections.unmodifiableList;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import com.sigpwned.spreadsheet4j.csv.util.CsvFieldDecoders;
-import com.sigpwned.spreadsheet4j.csv.util.CsvFieldEncoders;
+import java.util.Optional;
+import com.sigpwned.spreadsheet4j.csv.util.CoreCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.type.GenericType;
+import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
 public class CsvConfigRegistry {
-  private final List<CsvFieldEncoder> encoders;
-  private final List<CsvFieldDecoder> decoders;
+  private final List<CsvValueMapperFactory> valueMapperFactories;
 
   public CsvConfigRegistry() {
-    this.encoders = new ArrayList<>();
-    addFieldEncoderFirst(CsvFieldEncoders.BYTE);
-    addFieldEncoderFirst(CsvFieldEncoders.CHARACTER);
-    addFieldEncoderFirst(CsvFieldEncoders.SHORT);
-    addFieldEncoderFirst(CsvFieldEncoders.INTEGER);
-    addFieldEncoderFirst(CsvFieldEncoders.LONG);
-    addFieldEncoderFirst(CsvFieldEncoders.BIG_INTEGER);
-    addFieldEncoderFirst(CsvFieldEncoders.FLOAT);
-    addFieldEncoderFirst(CsvFieldEncoders.DOUBLE);
-    addFieldEncoderFirst(CsvFieldEncoders.BIG_DECIMAL);
-    addFieldEncoderFirst(CsvFieldEncoders.INSTANT);
-    addFieldEncoderFirst(CsvFieldEncoders.LOCAL_DATE);
-    addFieldEncoderFirst(CsvFieldEncoders.OFFSET_DATE_TIME);
-    addFieldEncoderFirst(CsvFieldEncoders.STRING);
-
-    this.decoders = new ArrayList<>();
-    addFieldDecoderFirst(CsvFieldDecoders.BYTE);
-    addFieldDecoderFirst(CsvFieldDecoders.CHARACTER);
-    addFieldDecoderFirst(CsvFieldDecoders.SHORT);
-    addFieldDecoderFirst(CsvFieldDecoders.INTEGER);
-    addFieldDecoderFirst(CsvFieldDecoders.LONG);
-    addFieldDecoderFirst(CsvFieldDecoders.BIG_INTEGER);
-    addFieldDecoderFirst(CsvFieldDecoders.FLOAT);
-    addFieldDecoderFirst(CsvFieldDecoders.DOUBLE);
-    addFieldDecoderFirst(CsvFieldDecoders.BIG_DECIMAL);
-    addFieldDecoderFirst(CsvFieldDecoders.INSTANT);
-    addFieldDecoderFirst(CsvFieldDecoders.LOCAL_DATE);
-    addFieldDecoderFirst(CsvFieldDecoders.OFFSET_DATE_TIME);
-    addFieldDecoderFirst(CsvFieldDecoders.STRING);
+    this.valueMapperFactories = new ArrayList<>();
+    addValueMapperLast(CoreCsvValueMapperFactory.INSTANCE);
   }
 
-  public List<CsvFieldEncoder> getEncoders() {
-    return unmodifiableList(encoders);
+  public void addValueMapperFirst(CsvValueMapperFactory valueMapperFactory) {
+    valueMapperFactories.add(0, valueMapperFactory);
   }
 
-  public CsvConfigRegistry addFieldEncoderFirst(CsvFieldEncoder encoder) {
-    if (encoder == null)
-      throw new NullPointerException();
-    encoders.add(0, encoder);
-    return this;
+  public void addValueMapperLast(CsvValueMapperFactory valueMapperFactory) {
+    valueMapperFactories.add(valueMapperFactories.size(), valueMapperFactory);
   }
 
-  public CsvConfigRegistry addFieldEncoderLast(CsvFieldEncoder encoder) {
-    if (encoder == null)
-      throw new NullPointerException();
-    encoders.add(encoders.size(), encoder);
-    return this;
+  public Optional<CsvValueMapper> findValueMapperForType(Class<?> klass) {
+    return findValueMapperForType(QualifiedType.of(klass));
   }
 
-  public List<CsvFieldDecoder> getDecoders() {
-    return unmodifiableList(decoders);
+  public Optional<CsvValueMapper> findValueMapperForType(Type type) {
+    return findValueMapperForType(QualifiedType.of(type));
   }
 
-  public CsvConfigRegistry addFieldDecoderFirst(CsvFieldDecoder decoder) {
-    if (decoder == null)
-      throw new NullPointerException();
-    decoders.add(0, decoder);
-    return this;
+  public Optional<CsvValueMapper> findValueMapperForType(GenericType<?> genericType) {
+    return findValueMapperForType(QualifiedType.of(genericType));
   }
 
-  public CsvConfigRegistry addFieldDecoderLast(CsvFieldDecoder decoder) {
-    if (decoder == null)
-      throw new NullPointerException();
-    decoders.add(decoders.size(), decoder);
-    return this;
+  public Optional<CsvValueMapper> findValueMapperForType(QualifiedType<?> type) {
+    return getValueMapperFactories().stream()
+        .flatMap(f -> f.buildValueMapper(type, CsvConfigRegistry.this).stream()).findFirst();
+  }
+
+  /**
+   * @return the mapperFactories
+   */
+  public List<CsvValueMapperFactory> getValueMapperFactories() {
+    return unmodifiableList(valueMapperFactories);
   }
 }

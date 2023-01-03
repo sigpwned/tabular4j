@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-core
+ * spreadsheet4j-csv
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,22 +17,29 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j;
+package com.sigpwned.spreadsheet4j.csv;
 
-import java.io.IOException;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
-import com.sigpwned.spreadsheet4j.io.ByteSink;
-import com.sigpwned.spreadsheet4j.model.WorkbookReader;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
+import java.lang.reflect.Type;
+import java.util.Optional;
+import com.sigpwned.spreadsheet4j.type.GenericType;
+import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
-public interface SpreadsheetFactory {
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException;
+public interface CsvValueMapperFactory {
+  public default Optional<CsvValueMapper> buildValueMapper(Class<?> type,
+      CsvConfigRegistry registry) {
+    return buildValueMapper(QualifiedType.of(type), registry);
+  }
 
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
+  public default Optional<CsvValueMapper> buildValueMapper(Type type, CsvConfigRegistry registry) {
+    return buildValueMapper(QualifiedType.of(type), registry);
+  }
 
-  public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;
+  public default Optional<CsvValueMapper> buildValueMapper(GenericType<?> type,
+      CsvConfigRegistry registry) {
+    return buildValueMapper(QualifiedType.of(type), registry);
+  }
 
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException;
+  public Optional<CsvValueMapper> buildValueMapper(QualifiedType<?> type,
+      CsvConfigRegistry registry);
+
 }

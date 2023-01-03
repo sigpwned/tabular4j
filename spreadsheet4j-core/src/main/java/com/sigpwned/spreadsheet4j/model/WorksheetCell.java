@@ -30,14 +30,12 @@ public interface WorksheetCell {
     return getValue(QualifiedType.of(type));
   }
 
-  @SuppressWarnings("unchecked")
   public default <T> T getValue(Class<T> klass) {
-    return (T) getValue((Type) klass);
+    return (T) getValue(QualifiedType.of(klass));
   }
 
-  @SuppressWarnings("unchecked")
   public default <T> T getValue(GenericType<T> genericType) {
-    return (T) getValue(genericType.getType());
+    return (T) getValue(QualifiedType.of(genericType));
   }
 
   public <T> T getValue(QualifiedType<T> qualifiedType);

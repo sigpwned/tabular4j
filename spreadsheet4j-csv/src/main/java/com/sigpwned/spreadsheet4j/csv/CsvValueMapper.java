@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-core
+ * spreadsheet4j-csv
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,22 +17,12 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j;
+package com.sigpwned.spreadsheet4j.csv;
 
-import java.io.IOException;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
-import com.sigpwned.spreadsheet4j.io.ByteSink;
-import com.sigpwned.spreadsheet4j.model.WorkbookReader;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
+import com.sigpwned.csv4j.CsvField;
 
-public interface SpreadsheetFactory {
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException;
+public interface CsvValueMapper {
+  public void setValue(CsvField cell, Object value);
 
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
-
-  public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;
-
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException;
+  public Object getValue(CsvField cell);
 }

@@ -1,12 +1,28 @@
+/*-
+ * =================================LICENSE_START==================================
+ * spreadsheet4j-csv
+ * ====================================SECTION=====================================
+ * Copyright (C) 2022 - 2023 Andy Boothe
+ * ====================================SECTION=====================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ==================================LICENSE_END===================================
+ */
 package com.sigpwned.spreadsheet4j.csv.write;
 
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import com.sigpwned.csv4j.CsvField;
 import com.sigpwned.csv4j.CsvRecord;
 import com.sigpwned.csv4j.write.CsvWriter;
@@ -46,19 +62,17 @@ public class CsvWorksheetWriter implements WorksheetWriter {
     if (delegate == null)
       delegate = new CsvWriter(getSink().getWriter());
 
-    List<CsvField> fields = new ArrayList<>(cells.size());
-    for (WorksheetCellDefinition cell : cells) {
-      Optional<CsvField> maybeField;
-      if (cell.getValue() != null) {
-        maybeField =
-            getConfig().getEncoders().stream().map(e -> e.toCsvField(cell.getValue(), getConfig()))
-                .filter(Objects::nonNull).findFirst();
+    List<CsvField> fields = cells.stream().map(cell -> {
+      CsvField field = new CsvField();
+      if (cell != null && cell.getValue() != null) {
+        getConfig().findValueMapperForType(cell.getValue().getType())
+            .orElseThrow(() -> new IllegalStateException("no mapper for type"))
+            .setValue(field, cell.getValue().getValue());
       } else {
-        maybeField = Optional.of(CsvField.of(false, ""));
+        field = field.withQuoted(false).withText("");
       }
-      fields.add(maybeField
-          .orElseThrow(() -> new IllegalArgumentException("Unsupported type " + cell.getValue())));
-    }
+      return field;
+    }).toList();
 
     // We don't care about style at all
     delegate.writeNext(CsvRecord.of(fields));
