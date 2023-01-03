@@ -17,7 +17,7 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx.read;
+package com.sigpwned.spreadsheet4j.excel.read;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -26,28 +26,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import com.sigpwned.spreadsheet4j.excel.ExcelConfigRegistry;
+import com.sigpwned.spreadsheet4j.excel.ExcelWorksheetCell;
+import com.sigpwned.spreadsheet4j.excel.ExcelWorksheetRow;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetRow;
-import com.sigpwned.spreadsheet4j.xlsx.XlsxConfigRegistry;
-import com.sigpwned.spreadsheet4j.xlsx.XlsxWorksheetCell;
-import com.sigpwned.spreadsheet4j.xlsx.XlsxWorksheetRow;
 
 /**
  * Fails to read sheets with merged regions. Respects hidden columns.
  */
-public class XlsxWorksheetReader implements WorksheetReader {
+public class ExcelWorksheetReader implements WorksheetReader {
   private static final int FIRST_ROW_INDEX = 0;
 
-  private final XlsxConfigRegistry config;
-  private final XSSFSheet worksheet;
+  private final ExcelConfigRegistry config;
+  private final Sheet worksheet;
   private final int sheetIndex;
   private final boolean active;
   private int rowIndex;
   private Map<Integer, Boolean> hidden;
 
-  public XlsxWorksheetReader(XlsxConfigRegistry config, XSSFSheet worksheet, int sheetIndex,
+  public ExcelWorksheetReader(ExcelConfigRegistry config, Sheet worksheet, int sheetIndex,
       boolean active) {
     this.config = requireNonNull(config);
     this.worksheet = requireNonNull(worksheet);
@@ -74,25 +74,25 @@ public class XlsxWorksheetReader implements WorksheetReader {
     WorksheetRow result = null;
     while (result == null && rowIndex <= getWorksheet().getLastRowNum()) {
       if (rowIndex < getWorksheet().getFirstRowNum()) {
-        result = new XlsxWorksheetRow(rowIndex, List.of());
+        result = new ExcelWorksheetRow(rowIndex, List.of());
       } else {
-        XSSFRow row = getWorksheet().getRow(rowIndex);
+        Row row = getWorksheet().getRow(rowIndex);
         if (row.getFirstCellNum() == -1) {
-          result = new XlsxWorksheetRow(rowIndex, List.of());
+          result = new ExcelWorksheetRow(rowIndex, List.of());
           break;
         } else if (row.isFormatted() && row.getRowStyle().getHidden()) {
           // Skip this row, since it's hidden.
         } else if (row.getZeroHeight()) {
           // This is another way to hide a row
         } else {
-          List<XlsxWorksheetCell> cells = new ArrayList<>();
+          List<ExcelWorksheetCell> cells = new ArrayList<>();
           for (int i = 0; i < row.getFirstCellNum(); i++)
             if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden))
-              cells.add(new XlsxWorksheetCell(getConfig(), i, null));
+              cells.add(new ExcelWorksheetCell(getConfig(), i, null));
           for (int i = row.getFirstCellNum(); i < row.getLastCellNum(); i++)
             if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden))
-              cells.add(new XlsxWorksheetCell(getConfig(), i, row.getCell(i)));
-          result = new XlsxWorksheetRow(rowIndex, cells);
+              cells.add(new ExcelWorksheetCell(getConfig(), i, row.getCell(i)));
+          result = new ExcelWorksheetRow(rowIndex, cells);
         }
       }
       rowIndex = rowIndex + 1;
@@ -104,14 +104,14 @@ public class XlsxWorksheetReader implements WorksheetReader {
   /**
    * @return the config
    */
-  public XlsxConfigRegistry getConfig() {
+  public ExcelConfigRegistry getConfig() {
     return config;
   }
 
   /**
    * @return the worksheet
    */
-  private XSSFSheet getWorksheet() {
+  private Sheet getWorksheet() {
     return worksheet;
   }
 

@@ -28,21 +28,15 @@ import com.sigpwned.spreadsheet4j.csv.CsvConfigRegistry;
 import com.sigpwned.spreadsheet4j.csv.CsvWorksheetCell;
 import com.sigpwned.spreadsheet4j.csv.CsvWorksheetRow;
 import com.sigpwned.spreadsheet4j.csv.util.Csv;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetRow;
-import com.sigpwned.spreadsheet4j.util.MoreChardet;
 
 public class CsvWorksheetReader implements WorksheetReader {
   private final CsvConfigRegistry config;
   private final CharSource source;
   private CsvReader delegate;
   private int rowIndex;
-
-  public CsvWorksheetReader(CsvConfigRegistry config, ByteSource source) {
-    this(config, MoreChardet.decode(source));
-  }
 
   public CsvWorksheetReader(CsvConfigRegistry config, CharSource source) {
     this.config = requireNonNull(config);

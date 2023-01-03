@@ -21,7 +21,7 @@ package com.sigpwned.spreadsheet4j.model;
 
 import java.io.IOException;
 
-public interface WorkbookWriter extends WorksheetCellStyleFactory, AutoCloseable {
+public interface WorkbookWriter extends AutoCloseable {
   public WorksheetWriter getWorksheet(String name);
 
   public void close() throws IOException;

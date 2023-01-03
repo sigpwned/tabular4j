@@ -17,34 +17,12 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx;
+package com.sigpwned.spreadsheet4j.excel;
 
-import static java.util.Collections.unmodifiableList;
-import java.util.List;
-import com.sigpwned.spreadsheet4j.model.WorksheetCell;
-import com.sigpwned.spreadsheet4j.model.WorksheetRow;
+import org.apache.poi.ss.usermodel.Cell;
 
-public class XlsxWorksheetRow implements WorksheetRow {
-  private final int rowIndex;
-  private final List<XlsxWorksheetCell> cells;
+public interface ExcelValueMapper {
+  public void setValue(Cell cell, Object value);
 
-  public XlsxWorksheetRow(int rowIndex, List<XlsxWorksheetCell> cells) {
-    if (rowIndex < 0)
-      throw new IllegalArgumentException("rowIndex must not be negative");
-    if (cells == null)
-      throw new NullPointerException();
-    this.rowIndex = rowIndex;
-    this.cells = unmodifiableList(cells);
-  }
-
-  @Override
-  public int getRowIndex() {
-    return rowIndex;
-  }
-
-  @Override
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public List<WorksheetCell> getCells() {
-    return (List) cells;
-  }
+  public Object getValue(Cell cell);
 }

@@ -17,16 +17,16 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx;
+package com.sigpwned.spreadsheet4j.excel;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import com.sigpwned.spreadsheet4j.model.WorksheetCell;
 import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
-public class XlsxWorksheetCell implements WorksheetCell {
-  private final XlsxConfigRegistry config;
+public class ExcelWorksheetCell implements WorksheetCell {
+  private final ExcelConfigRegistry config;
   private final int columnIndex;
 
   /**
@@ -35,9 +35,9 @@ public class XlsxWorksheetCell implements WorksheetCell {
    * previous example, the {@code WorksheetCell} instances for cells 0, 1, 2 on line 5 would have a
    * null value for this property.)
    */
-  private final XSSFCell cell;
+  private final Cell cell;
 
-  public XlsxWorksheetCell(XlsxConfigRegistry config, int columnIndex, XSSFCell cell) {
+  public ExcelWorksheetCell(ExcelConfigRegistry config, int columnIndex, Cell cell) {
     this.config = requireNonNull(config);
     this.columnIndex = columnIndex;
     this.cell = cell;
@@ -57,7 +57,7 @@ public class XlsxWorksheetCell implements WorksheetCell {
   /**
    * @return the config
    */
-  public XlsxConfigRegistry getConfig() {
+  public ExcelConfigRegistry getConfig() {
     return config;
   }
 
@@ -69,7 +69,7 @@ public class XlsxWorksheetCell implements WorksheetCell {
   /**
    * @return the cell
    */
-  private XSSFCell getCell() {
+  private Cell getCell() {
     return cell;
   }
 }

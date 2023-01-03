@@ -30,27 +30,10 @@ public class WorksheetCellDefinition {
     return new WorksheetCellDefinition(value);
   }
 
-  public static WorksheetCellDefinition of(WorksheetCellStyle style, WorksheetCellValue value) {
-    return new WorksheetCellDefinition(style, value);
-  }
-
-  private final WorksheetCellStyle style;
   private final WorksheetCellValue value;
 
   public WorksheetCellDefinition(WorksheetCellValue value) {
-    this(null, value);
-  }
-
-  public WorksheetCellDefinition(WorksheetCellStyle style, WorksheetCellValue value) {
-    this.style = style;
     this.value = requireNonNull(value);
-  }
-
-  /**
-   * @return the style
-   */
-  public WorksheetCellStyle getStyle() {
-    return style;
   }
 
   /**

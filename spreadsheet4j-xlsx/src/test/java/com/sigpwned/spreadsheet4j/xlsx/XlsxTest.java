@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import com.sigpwned.spreadsheet4j.excel.XlsxSpreadsheetFactory;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.model.WorksheetCellDefinition;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;

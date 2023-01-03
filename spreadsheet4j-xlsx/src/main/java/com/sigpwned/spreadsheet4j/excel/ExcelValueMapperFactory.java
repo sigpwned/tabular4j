@@ -17,30 +17,30 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx;
+package com.sigpwned.spreadsheet4j.excel;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
 import com.sigpwned.spreadsheet4j.type.GenericType;
 import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
-public interface XlsxValueMapperFactory {
-  public default Optional<XlsxValueMapper> buildValueMapper(Class<?> type,
-      XlsxConfigRegistry registry) {
+public interface ExcelValueMapperFactory {
+  public default Optional<ExcelValueMapper> buildValueMapper(Class<?> type,
+      ExcelConfigRegistry registry) {
     return buildValueMapper(QualifiedType.of(type), registry);
   }
 
-  public default Optional<XlsxValueMapper> buildValueMapper(Type type,
-      XlsxConfigRegistry registry) {
+  public default Optional<ExcelValueMapper> buildValueMapper(Type type,
+      ExcelConfigRegistry registry) {
     return buildValueMapper(QualifiedType.of(type), registry);
   }
 
-  public default Optional<XlsxValueMapper> buildValueMapper(GenericType<?> type,
-      XlsxConfigRegistry registry) {
+  public default Optional<ExcelValueMapper> buildValueMapper(GenericType<?> type,
+      ExcelConfigRegistry registry) {
     return buildValueMapper(QualifiedType.of(type), registry);
   }
 
-  public Optional<XlsxValueMapper> buildValueMapper(QualifiedType<?> type,
-      XlsxConfigRegistry registry);
+  public Optional<ExcelValueMapper> buildValueMapper(QualifiedType<?> type,
+      ExcelConfigRegistry registry);
 
 }

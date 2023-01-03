@@ -17,25 +17,25 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx.write;
+package com.sigpwned.spreadsheet4j.excel.write;
 
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.util.List;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import com.sigpwned.spreadsheet4j.excel.ExcelConfigRegistry;
 import com.sigpwned.spreadsheet4j.model.WorksheetCellDefinition;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
-import com.sigpwned.spreadsheet4j.xlsx.XlsxConfigRegistry;
 
-public class XlsxWorksheetWriter implements WorksheetWriter {
-  private final XlsxConfigRegistry config;
-  private final XSSFSheet worksheet;
+public class ExcelWorksheetWriter implements WorksheetWriter {
+  private final ExcelConfigRegistry config;
+  private final Sheet worksheet;
   private final int sheetIndex;
   private int rowIndex;
 
-  public XlsxWorksheetWriter(XlsxConfigRegistry config, XSSFSheet worksheet, int sheetIndex) {
+  public ExcelWorksheetWriter(ExcelConfigRegistry config, Sheet worksheet, int sheetIndex) {
     this.config = requireNonNull(config);
     this.worksheet = requireNonNull(worksheet);
     this.sheetIndex = sheetIndex;
@@ -53,14 +53,14 @@ public class XlsxWorksheetWriter implements WorksheetWriter {
 
   @Override
   public void writeRow(List<WorksheetCellDefinition> cells) throws IOException {
-    XSSFRow row = getWorksheet().createRow(rowIndex++);
+    Row row = getWorksheet().createRow(rowIndex++);
     for (int i = 0; i < cells.size(); i++) {
       WorksheetCellDefinition ci = cells.get(i);
 
       if (ci.getValue() == null)
         continue;
 
-      XSSFCell cell = row.createCell(i);
+      Cell cell = row.createCell(i);
 
       getConfig().findValueMapperForType(ci.getValue().getType())
           .orElseThrow(() -> new IllegalStateException("no mapper for type"))
@@ -76,14 +76,14 @@ public class XlsxWorksheetWriter implements WorksheetWriter {
   /**
    * @return the config
    */
-  public XlsxConfigRegistry getConfig() {
+  public ExcelConfigRegistry getConfig() {
     return config;
   }
 
   /**
    * @return the worksheet
    */
-  private XSSFSheet getWorksheet() {
+  private Sheet getWorksheet() {
     return worksheet;
   }
 }

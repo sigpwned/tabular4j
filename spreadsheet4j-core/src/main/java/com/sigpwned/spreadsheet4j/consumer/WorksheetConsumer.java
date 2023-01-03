@@ -21,10 +21,9 @@ package com.sigpwned.spreadsheet4j.consumer;
 
 import java.util.List;
 import com.sigpwned.spreadsheet4j.model.WorksheetCell;
-import com.sigpwned.spreadsheet4j.util.Headers;
 
 public interface WorksheetConsumer {
-  public default void beginWorksheet(int sheetIndex, String sheetName, Headers headers) {}
+  public default void beginWorksheet(int sheetIndex, String sheetName) {}
 
   public default void endWorksheet() {}
 

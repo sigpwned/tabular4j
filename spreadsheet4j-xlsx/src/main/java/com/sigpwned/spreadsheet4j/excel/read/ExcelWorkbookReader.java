@@ -17,33 +17,33 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx.read;
+package com.sigpwned.spreadsheet4j.excel.read;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import com.sigpwned.spreadsheet4j.excel.ExcelConfigRegistry;
 import com.sigpwned.spreadsheet4j.model.WorkbookReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.xlsx.XlsxConfigRegistry;
 
-public class XlsxWorkbookReader implements WorkbookReader {
-  private final XlsxConfigRegistry config;
-  private final XSSFWorkbook delegate;
-  private final List<XlsxWorksheetReader> worksheets;
+public class ExcelWorkbookReader implements WorkbookReader {
+  private final ExcelConfigRegistry config;
+  private final Workbook delegate;
+  private final List<ExcelWorksheetReader> worksheets;
 
-  public XlsxWorkbookReader(XlsxConfigRegistry config, XSSFWorkbook delegate) {
+  public ExcelWorkbookReader(ExcelConfigRegistry config, Workbook delegate) {
     this.config = requireNonNull(config);
     this.delegate = requireNonNull(delegate);
 
-    List<XlsxWorksheetReader> worksheets = new ArrayList<>();
+    List<ExcelWorksheetReader> worksheets = new ArrayList<>();
     for (int sheetIndex = 0; sheetIndex < getDelegate().getNumberOfSheets(); sheetIndex++) {
-      XSSFSheet worksheet = getDelegate().getSheetAt(sheetIndex);
+      Sheet worksheet = getDelegate().getSheetAt(sheetIndex);
       boolean active = getDelegate().getActiveSheetIndex() == sheetIndex;
-      worksheets.add(new XlsxWorksheetReader(getConfig(), worksheet, sheetIndex, active));
+      worksheets.add(new ExcelWorksheetReader(getConfig(), worksheet, sheetIndex, active));
     }
     if (worksheets.isEmpty())
       throw new IllegalArgumentException("no sheets");
@@ -61,7 +61,7 @@ public class XlsxWorkbookReader implements WorkbookReader {
   /**
    * @return the config
    */
-  public XlsxConfigRegistry getConfig() {
+  public ExcelConfigRegistry getConfig() {
     return config;
   }
 
@@ -79,7 +79,7 @@ public class XlsxWorkbookReader implements WorkbookReader {
   /**
    * @return the delegate
    */
-  private XSSFWorkbook getDelegate() {
+  private Workbook getDelegate() {
     return delegate;
   }
 }

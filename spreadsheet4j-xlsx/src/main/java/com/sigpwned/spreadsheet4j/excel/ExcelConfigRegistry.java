@@ -17,54 +17,54 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.xlsx;
+package com.sigpwned.spreadsheet4j.excel;
 
 import static java.util.Collections.unmodifiableList;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.sigpwned.spreadsheet4j.excel.util.CoreExcelValueMapperFactory;
 import com.sigpwned.spreadsheet4j.type.GenericType;
 import com.sigpwned.spreadsheet4j.type.QualifiedType;
-import com.sigpwned.spreadsheet4j.xlsx.util.CoreXlsxValueMapperFactory;
 
-public class XlsxConfigRegistry {
-  private final List<XlsxValueMapperFactory> valueMapperFactories;
+public class ExcelConfigRegistry {
+  private final List<ExcelValueMapperFactory> valueMapperFactories;
 
-  public XlsxConfigRegistry() {
+  public ExcelConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
-    addValueMapperLast(CoreXlsxValueMapperFactory.INSTANCE);
+    addValueMapperLast(CoreExcelValueMapperFactory.INSTANCE);
   }
 
-  public void addValueMapperFirst(XlsxValueMapperFactory valueMapperFactory) {
+  public void addValueMapperFirst(ExcelValueMapperFactory valueMapperFactory) {
     valueMapperFactories.add(0, valueMapperFactory);
   }
 
-  public void addValueMapperLast(XlsxValueMapperFactory valueMapperFactory) {
+  public void addValueMapperLast(ExcelValueMapperFactory valueMapperFactory) {
     valueMapperFactories.add(valueMapperFactories.size(), valueMapperFactory);
   }
 
-  public Optional<XlsxValueMapper> findValueMapperForType(Class<?> klass) {
+  public Optional<ExcelValueMapper> findValueMapperForType(Class<?> klass) {
     return findValueMapperForType(QualifiedType.of(klass));
   }
 
-  public Optional<XlsxValueMapper> findValueMapperForType(Type type) {
+  public Optional<ExcelValueMapper> findValueMapperForType(Type type) {
     return findValueMapperForType(QualifiedType.of(type));
   }
 
-  public Optional<XlsxValueMapper> findValueMapperForType(GenericType<?> genericType) {
+  public Optional<ExcelValueMapper> findValueMapperForType(GenericType<?> genericType) {
     return findValueMapperForType(QualifiedType.of(genericType));
   }
 
-  public Optional<XlsxValueMapper> findValueMapperForType(QualifiedType<?> type) {
+  public Optional<ExcelValueMapper> findValueMapperForType(QualifiedType<?> type) {
     return getValueMapperFactories().stream()
-        .flatMap(f -> f.buildValueMapper(type, XlsxConfigRegistry.this).stream()).findFirst();
+        .flatMap(f -> f.buildValueMapper(type, ExcelConfigRegistry.this).stream()).findFirst();
   }
 
   /**
    * @return the mapperFactories
    */
-  public List<XlsxValueMapperFactory> getValueMapperFactories() {
+  public List<ExcelValueMapperFactory> getValueMapperFactories() {
     return unmodifiableList(valueMapperFactories);
   }
 }

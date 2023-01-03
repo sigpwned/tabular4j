@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-core
+ * spreadsheet4j-xlsx
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,10 +17,34 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.model;
+package com.sigpwned.spreadsheet4j.excel;
 
-import com.sigpwned.spreadsheet4j.util.Headers;
+import static java.util.Collections.unmodifiableList;
+import java.util.List;
+import com.sigpwned.spreadsheet4j.model.WorksheetCell;
+import com.sigpwned.spreadsheet4j.model.WorksheetRow;
 
-public interface TabularWorksheetReader extends WorksheetReader {
-  public Headers getHeaders();
+public class ExcelWorksheetRow implements WorksheetRow {
+  private final int rowIndex;
+  private final List<ExcelWorksheetCell> cells;
+
+  public ExcelWorksheetRow(int rowIndex, List<ExcelWorksheetCell> cells) {
+    if (rowIndex < 0)
+      throw new IllegalArgumentException("rowIndex must not be negative");
+    if (cells == null)
+      throw new NullPointerException();
+    this.rowIndex = rowIndex;
+    this.cells = unmodifiableList(cells);
+  }
+
+  @Override
+  public int getRowIndex() {
+    return rowIndex;
+  }
+
+  @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public List<WorksheetCell> getCells() {
+    return (List) cells;
+  }
 }
