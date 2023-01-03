@@ -24,7 +24,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import com.sigpwned.spreadsheet4j.csv.util.CoreCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.csv.mapper.BoxedCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.csv.mapper.CoreCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.csv.mapper.InternetCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.csv.mapper.JavaTimeCsvValueMapperFactory;
+import com.sigpwned.spreadsheet4j.csv.mapper.PrimitiveCsvValueMapperFactory;
 import com.sigpwned.spreadsheet4j.type.GenericType;
 import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
@@ -34,6 +38,10 @@ public class CsvConfigRegistry {
   public CsvConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
     addValueMapperLast(CoreCsvValueMapperFactory.INSTANCE);
+    addValueMapperLast(PrimitiveCsvValueMapperFactory.INSTANCE);
+    addValueMapperLast(BoxedCsvValueMapperFactory.INSTANCE);
+    addValueMapperLast(JavaTimeCsvValueMapperFactory.INSTANCE);
+    addValueMapperLast(InternetCsvValueMapperFactory.INSTANCE);
   }
 
   public void addValueMapperFirst(CsvValueMapperFactory valueMapperFactory) {

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -56,5 +57,32 @@ public class CsvTest {
     }
 
     assertThat(values, is(List.of("hello", "world")));
+  }
+
+  @Test
+  public void valueMappingTest() throws IOException {
+    CsvSpreadsheetFactory factory = new CsvSpreadsheetFactory();
+
+    Instant now = Instant.now();
+
+    List<Object> values = new ArrayList<>();
+    File tmp = File.createTempFile("workbook.", ".csv");
+    try {
+      try (WorksheetWriter w = factory.writeActiveWorksheet(() -> new FileOutputStream(tmp))) {
+        w.writeRow(List.of(WorksheetCellDefinition.ofValue("hello"),
+            WorksheetCellDefinition.ofValue(1), WorksheetCellDefinition.ofValue(now)));
+      }
+
+      try (WorksheetReader r = factory.readActiveWorksheet(() -> new FileInputStream(tmp))) {
+        WorksheetRow row = r.readRow();
+        values.add(row.getCells().get(0).getValue(String.class));
+        values.add(row.getCells().get(1).getValue(Integer.class));
+        values.add(row.getCells().get(2).getValue(Instant.class));
+      }
+    } finally {
+      tmp.delete();
+    }
+
+    assertThat(values, is(List.of("hello", 1, now)));
   }
 }

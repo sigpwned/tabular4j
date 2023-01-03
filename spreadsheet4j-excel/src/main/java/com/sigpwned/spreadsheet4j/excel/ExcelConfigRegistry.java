@@ -24,7 +24,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import com.sigpwned.spreadsheet4j.excel.util.CoreExcelValueMapperFactory;
+import com.sigpwned.spreadsheet4j.excel.mapper.BoxedExcelValueMapperFactory;
+import com.sigpwned.spreadsheet4j.excel.mapper.CoreExcelValueMapperFactory;
+import com.sigpwned.spreadsheet4j.excel.mapper.InternetExcelValueMapperFactory;
+import com.sigpwned.spreadsheet4j.excel.mapper.JavaTimeExcelValueMapperFactory;
+import com.sigpwned.spreadsheet4j.excel.mapper.PrimitiveExcelValueMapperFactory;
 import com.sigpwned.spreadsheet4j.type.GenericType;
 import com.sigpwned.spreadsheet4j.type.QualifiedType;
 
@@ -34,6 +38,10 @@ public class ExcelConfigRegistry {
   public ExcelConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
     addValueMapperLast(CoreExcelValueMapperFactory.INSTANCE);
+    addValueMapperLast(PrimitiveExcelValueMapperFactory.INSTANCE);
+    addValueMapperLast(BoxedExcelValueMapperFactory.INSTANCE);
+    addValueMapperLast(JavaTimeExcelValueMapperFactory.INSTANCE);
+    addValueMapperLast(InternetExcelValueMapperFactory.INSTANCE);
   }
 
   public void addValueMapperFirst(ExcelValueMapperFactory valueMapperFactory) {
