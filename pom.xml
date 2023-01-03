@@ -69,7 +69,7 @@
     <modules>
         <module>spreadsheet4j-core</module>
         <module>spreadsheet4j-csv</module>
-        <module>spreadsheet4j-xlsx</module>
+        <module>spreadsheet4j-excel</module>
     </modules>
 
     <build>
