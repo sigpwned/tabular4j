@@ -22,7 +22,7 @@ package com.sigpwned.spreadsheet4j.csv;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import com.sigpwned.spreadsheet4j.SpreadsheetFactory;
+import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorkbookReader;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorksheetReader;
 import com.sigpwned.spreadsheet4j.csv.write.CsvWorkbookWriter;
@@ -33,14 +33,14 @@ import com.sigpwned.spreadsheet4j.io.CharSink;
 import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.util.MoreChardet;
 
-public class CsvSpreadsheetFactory implements SpreadsheetFactory {
+public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   private final CsvConfigRegistry config;
 
-  public CsvSpreadsheetFactory() {
+  public CsvSpreadsheetFormatFactory() {
     this(new CsvConfigRegistry());
   }
 
-  public CsvSpreadsheetFactory(CsvConfigRegistry config) {
+  public CsvSpreadsheetFormatFactory(CsvConfigRegistry config) {
     this.config = requireNonNull(config);
   }
 

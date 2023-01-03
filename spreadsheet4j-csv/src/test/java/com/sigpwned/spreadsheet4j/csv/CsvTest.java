@@ -37,7 +37,7 @@ import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 public class CsvTest {
   @Test
   public void smokeTest() throws IOException {
-    CsvSpreadsheetFactory factory = new CsvSpreadsheetFactory();
+    CsvSpreadsheetFormatFactory factory = new CsvSpreadsheetFormatFactory();
 
     List<Object> values = new ArrayList<>();
     File tmp = File.createTempFile("workbook.", ".csv");
@@ -61,7 +61,7 @@ public class CsvTest {
 
   @Test
   public void valueMappingTest() throws IOException {
-    CsvSpreadsheetFactory factory = new CsvSpreadsheetFactory();
+    CsvSpreadsheetFormatFactory factory = new CsvSpreadsheetFormatFactory();
 
     Instant now = Instant.now();
 

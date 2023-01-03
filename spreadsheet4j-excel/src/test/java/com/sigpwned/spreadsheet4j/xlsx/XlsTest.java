@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import com.sigpwned.spreadsheet4j.excel.XlsSpreadsheetFactory;
+import com.sigpwned.spreadsheet4j.excel.XlsSpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.model.WorksheetCellDefinition;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetRow;
@@ -35,7 +35,7 @@ import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 public class XlsTest {
   @Test
   public void smokeTest() throws IOException {
-    XlsSpreadsheetFactory factory = new XlsSpreadsheetFactory();
+    XlsSpreadsheetFormatFactory factory = new XlsSpreadsheetFormatFactory();
 
     List<Object> values = new ArrayList<>();
     File tmp = File.createTempFile("workbook.", ".xls");

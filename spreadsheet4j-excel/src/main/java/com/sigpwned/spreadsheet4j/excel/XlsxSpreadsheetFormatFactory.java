@@ -21,13 +21,13 @@ package com.sigpwned.spreadsheet4j.excel;
 
 import static java.util.Objects.requireNonNull;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import com.sigpwned.spreadsheet4j.SpreadsheetFactory;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.spreadsheet4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.spreadsheet4j.forwarding.ForwardingWorkbookReader;
@@ -41,14 +41,14 @@ import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
-public class XlsSpreadsheetFactory implements SpreadsheetFactory {
+public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   private final ExcelConfigRegistry config;
 
-  public XlsSpreadsheetFactory() {
+  public XlsxSpreadsheetFormatFactory() {
     this(new ExcelConfigRegistry());
   }
 
-  public XlsSpreadsheetFactory(ExcelConfigRegistry config) {
+  public XlsxSpreadsheetFormatFactory(ExcelConfigRegistry config) {
     this.config = requireNonNull(config);
   }
 
@@ -56,7 +56,7 @@ public class XlsSpreadsheetFactory implements SpreadsheetFactory {
   public WorkbookReader readWorkbook(ByteSource source) throws IOException {
     WorkbookReader result = null;
 
-    File file = File.createTempFile("workbook.", ".xls");
+    File file = File.createTempFile("workbook.", ".xlsx");
     try {
       try (OutputStream out = new FileOutputStream(file)) {
         try (InputStream in = source.getInputStream()) {
@@ -85,7 +85,12 @@ public class XlsSpreadsheetFactory implements SpreadsheetFactory {
   }
 
   public WorkbookReader readWorkbook(File file) throws IOException {
-    HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(file));
+    XSSFWorkbook workbook;
+    try {
+      workbook = new XSSFWorkbook(file);
+    } catch (InvalidFormatException e) {
+      throw new IOException("Failed to open workbook", e);
+    }
     return new ExcelWorkbookReader(getConfig(), workbook);
   }
 
@@ -122,7 +127,7 @@ public class XlsSpreadsheetFactory implements SpreadsheetFactory {
 
   @Override
   public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException {
-    HSSFWorkbook workbook = new HSSFWorkbook();
+    XSSFWorkbook workbook = new XSSFWorkbook();
     WorkbookWriter delegate = new ExcelWorkbookWriter(getConfig(), workbook);
     return new ForwardingWorkbookWriter(delegate) {
       @Override
@@ -144,7 +149,7 @@ public class XlsSpreadsheetFactory implements SpreadsheetFactory {
 
   @Override
   public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
-    final HSSFWorkbook workbook = new HSSFWorkbook();
+    final XSSFWorkbook workbook = new XSSFWorkbook();
     final WorkbookWriter parent = new ExcelWorkbookWriter(getConfig(), workbook);
     final WorksheetWriter delegate = parent.getWorksheet("main");
     return new ForwardingWorksheetWriter(delegate) {

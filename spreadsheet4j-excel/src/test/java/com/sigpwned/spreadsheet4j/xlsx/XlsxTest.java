@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import com.sigpwned.spreadsheet4j.excel.XlsxSpreadsheetFactory;
+import com.sigpwned.spreadsheet4j.excel.XlsxSpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.model.WorksheetCellDefinition;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
@@ -36,7 +36,7 @@ import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 public class XlsxTest {
   @Test
   public void smokeTest() throws IOException {
-    XlsxSpreadsheetFactory factory = new XlsxSpreadsheetFactory();
+    XlsxSpreadsheetFormatFactory factory = new XlsxSpreadsheetFormatFactory();
 
     List<Object> values = new ArrayList<>();
     File tmp = File.createTempFile("workbook.", ".xlsx");
@@ -60,7 +60,7 @@ public class XlsxTest {
 
   @Test(expected = IOException.class)
   public void mergedRegionTest() throws Exception {
-    XlsxSpreadsheetFactory factory = new XlsxSpreadsheetFactory();
+    XlsxSpreadsheetFormatFactory factory = new XlsxSpreadsheetFormatFactory();
 
     ByteSource source = () -> Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("has-merged-region.xlsx");
@@ -73,7 +73,7 @@ public class XlsxTest {
 
   @Test
   public void hiddenRowsAndColsTest() throws Exception {
-    XlsxSpreadsheetFactory factory = new XlsxSpreadsheetFactory();
+    XlsxSpreadsheetFormatFactory factory = new XlsxSpreadsheetFormatFactory();
 
     ByteSource source = () -> Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("has-hidden-rows-and-cols.xlsx");
@@ -92,7 +92,7 @@ public class XlsxTest {
 
   @Test
   public void activeFiltersTest() throws Exception {
-    XlsxSpreadsheetFactory factory = new XlsxSpreadsheetFactory();
+    XlsxSpreadsheetFormatFactory factory = new XlsxSpreadsheetFormatFactory();
 
     ByteSource source = () -> Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("has-active-filters.xlsx");
@@ -111,7 +111,7 @@ public class XlsxTest {
 
   @Test
   public void activeSheetTest() throws Exception {
-    XlsxSpreadsheetFactory factory = new XlsxSpreadsheetFactory();
+    XlsxSpreadsheetFormatFactory factory = new XlsxSpreadsheetFormatFactory();
 
     ByteSource source = () -> Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("has-multiple-sheets.xlsx");
