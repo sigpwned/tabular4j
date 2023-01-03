@@ -27,11 +27,11 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public interface WorksheetReader extends AutoCloseable {
+public interface WorksheetReader extends Iterable<WorksheetRow>, AutoCloseable {
   public int getSheetIndex();
 
   public String getSheetName();
-  
+
   public boolean isActive();
 
   /**
