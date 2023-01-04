@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.spreadsheet4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.spreadsheet4j.forwarding.ForwardingWorkbookReader;
@@ -41,7 +40,7 @@ import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
-public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
+public class XlsSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactory {
   public static final String DEFAULT_FILE_EXTENSION = "xls";
 
   private final ExcelConfigRegistry config;
@@ -86,6 +85,7 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     return result;
   }
 
+  @Override
   public WorkbookReader readWorkbook(File file) throws IOException {
     HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(file));
     return new ExcelWorkbookReader(getConfig(), workbook);
@@ -107,6 +107,7 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorksheetReader readActiveWorksheet(File file) throws IOException {
     final WorkbookReader workbook = readWorkbook(file);
     final WorksheetReader delegate = workbook.getActiveWorksheet();
@@ -140,6 +141,7 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorkbookWriter writeWorkbook(File file) throws IOException {
     return writeWorkbook(() -> new FileOutputStream(file));
   }
@@ -164,6 +166,7 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorksheetWriter writeActiveWorksheet(File file) throws IOException {
     return writeActiveWorksheet(() -> new FileOutputStream(file));
   }
@@ -171,6 +174,7 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   /**
    * @return the config
    */
+  @Override
   public ExcelConfigRegistry getConfig() {
     return config;
   }

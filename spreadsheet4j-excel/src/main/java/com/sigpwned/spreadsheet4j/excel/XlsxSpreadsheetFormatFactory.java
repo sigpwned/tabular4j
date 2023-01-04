@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.spreadsheet4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.spreadsheet4j.forwarding.ForwardingWorkbookReader;
@@ -41,7 +40,7 @@ import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
-public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
+public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactory {
   public static final String DEFAULT_FILE_EXTENSION = "xlsx";
 
   private final ExcelConfigRegistry config;
@@ -86,6 +85,7 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     return result;
   }
 
+  @Override
   public WorkbookReader readWorkbook(File file) throws IOException {
     XSSFWorkbook workbook;
     try {
@@ -112,6 +112,7 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorksheetReader readActiveWorksheet(File file) throws IOException {
     final WorkbookReader workbook = readWorkbook(file);
     final WorksheetReader delegate = workbook.getActiveWorksheet();
@@ -145,6 +146,7 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorkbookWriter writeWorkbook(File file) throws IOException {
     return writeWorkbook(() -> new FileOutputStream(file));
   }
@@ -169,6 +171,7 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
     };
   }
 
+  @Override
   public WorksheetWriter writeActiveWorksheet(File file) throws IOException {
     return writeActiveWorksheet(() -> new FileOutputStream(file));
   }
@@ -176,6 +179,7 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   /**
    * @return the config
    */
+  @Override
   public ExcelConfigRegistry getConfig() {
     return config;
   }

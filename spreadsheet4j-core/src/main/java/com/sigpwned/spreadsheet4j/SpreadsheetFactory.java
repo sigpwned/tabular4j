@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.ServiceLoader;
+import java.util.stream.IntStream;
 import com.sigpwned.spreadsheet4j.io.ByteSink;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.model.TabularWorkbookReader;
@@ -46,6 +49,7 @@ public class SpreadsheetFactory {
 
   public SpreadsheetFactory() {
     this.formats = new ArrayList<>();
+    ServiceLoader.load(SpreadsheetFormatFactory.class).forEach(this::register);
   }
 
   /**
@@ -55,8 +59,19 @@ public class SpreadsheetFactory {
     return unmodifiableList(formats);
   }
 
-  public void addFormat(SpreadsheetFormatFactory format) {
-    getFormats().add(format);
+  /**
+   * If there is already a registered {@link SpreadsheetFormatFactory} for the given factory's file
+   * extension, then the given factory replaces it. Otherwise, the given factory is added.
+   */
+  public void register(SpreadsheetFormatFactory format) {
+    OptionalInt index = IntStream.range(0, formats.size()).filter(
+        i -> getFormats().get(i).getDefaultFileExtension().equals(format.getDefaultFileExtension()))
+        .findFirst();
+    if (index.isPresent()) {
+      formats.set(index.getAsInt(), format);
+    } else {
+      formats.add(format);
+    }
   }
 
   public Optional<SpreadsheetFormatFactory> findFormatByDefaultFileExtension(
