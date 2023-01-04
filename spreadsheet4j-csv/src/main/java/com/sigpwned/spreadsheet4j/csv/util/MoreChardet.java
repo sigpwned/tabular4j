@@ -17,7 +17,7 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.util;
+package com.sigpwned.spreadsheet4j.csv.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -28,6 +28,7 @@ import java.io.Reader;
 import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.sigpwned.chardet4j.Chardet;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
@@ -70,10 +71,30 @@ public class MoreChardet {
     };
   }
 
+  /**
+   * @see <a href=
+   *      "https://en.wikipedia.org/wiki/List_of_file_signatures">https://en.wikipedia.org/wiki/List_of_file_signatures</a>
+   */
+  public static final byte[] XLSX_MAGIC_BYTES = new byte[] {(byte) 0x50, (byte) 0x4B};
+
+  /**
+   * @see <a href=
+   *      "https://en.wikipedia.org/wiki/List_of_file_signatures">https://en.wikipedia.org/wiki/List_of_file_signatures</a>
+   */
+  public static final byte[] XLS_MAGIC_BYTES = new byte[] {(byte) 0xD0, (byte) 0xCF, (byte) 0x11,
+      (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, (byte) 0x1A, (byte) 0xE1};
+
+  /**
+   * Very basic heuristic for text that (a) checks blacklisted binary spreadsheet formats, then (b)
+   * checks for alphanumeric text as the percentage of overall bytes.
+   */
   private static boolean isTextHeuristic(byte[] preview, Charset detectedCharset) {
-    if (preview.length >= 2 && preview[0] == 'P' && preview[1] == 'K') {
-      // This is probably a zip file. False!
-      return false;
+    for (byte[] blacklisted : new byte[][] {XLSX_MAGIC_BYTES, XLS_MAGIC_BYTES}) {
+      if (preview.length >= blacklisted.length && Arrays.compare(blacklisted, 0, blacklisted.length,
+          preview, 0, blacklisted.length) == 0) {
+        // This prefix is blacklisted. Not text!
+        return false;
+      }
     }
 
     final AtomicInteger alphanum = new AtomicInteger(0);

@@ -24,11 +24,11 @@ import java.util.List;
 import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.spreadsheet4j.csv.CsvConfigRegistry;
 import com.sigpwned.spreadsheet4j.csv.util.Csv;
+import com.sigpwned.spreadsheet4j.csv.util.MoreChardet;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.model.WorkbookReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.util.MoreChardet;
 
 public class CsvWorkbookReader implements WorkbookReader {
   private final CsvConfigRegistry config;

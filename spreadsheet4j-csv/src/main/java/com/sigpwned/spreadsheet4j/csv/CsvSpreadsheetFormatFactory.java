@@ -26,13 +26,13 @@ import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorkbookReader;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorksheetReader;
+import com.sigpwned.spreadsheet4j.csv.util.MoreChardet;
 import com.sigpwned.spreadsheet4j.csv.write.CsvWorkbookWriter;
 import com.sigpwned.spreadsheet4j.csv.write.CsvWorksheetWriter;
 import com.sigpwned.spreadsheet4j.io.ByteSink;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.io.CharSink;
 import com.sigpwned.spreadsheet4j.io.CharSource;
-import com.sigpwned.spreadsheet4j.util.MoreChardet;
 
 public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   public static final String DEFAULT_FILE_EXTENSION = "csv";
