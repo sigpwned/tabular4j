@@ -20,6 +20,7 @@
 package com.sigpwned.spreadsheet4j.model;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import com.sigpwned.spreadsheet4j.filter.RectangularWorksheetWriter;
 
@@ -36,6 +37,10 @@ public class TabularWorksheetHeaderWriter {
 
   public String getSheetName() {
     return getDelegate().getSheetName();
+  }
+
+  public TabularWorksheetRowWriter writeHeaders(String... headers) throws IOException {
+    return writeHeaders(Arrays.asList(headers));
   }
 
   public TabularWorksheetRowWriter writeHeaders(List<String> headers) throws IOException {

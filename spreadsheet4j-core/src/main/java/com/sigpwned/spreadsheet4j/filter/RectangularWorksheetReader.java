@@ -60,7 +60,9 @@ public class RectangularWorksheetReader implements WorksheetReader {
     WorksheetRow result;
 
     WorksheetRow row = getDelegate().readRow();
-    if (width == NO_WIDTH) {
+    if (row == null) {
+      result = null;
+    } else if (width == NO_WIDTH) {
       if (row != null)
         width = row.getCells().size();
       result = row;

@@ -21,12 +21,12 @@ package com.sigpwned.spreadsheet4j.excel;
 
 import static java.util.Objects.requireNonNull;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import com.sigpwned.spreadsheet4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.spreadsheet4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.spreadsheet4j.forwarding.ForwardingWorkbookReader;
@@ -87,7 +87,12 @@ public class XlsSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactor
 
   @Override
   public WorkbookReader readWorkbook(File file) throws IOException {
-    HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(file));
+    HSSFWorkbook workbook;
+    try {
+      workbook = new HSSFWorkbook(POIFSFileSystem.create(file));
+    } catch (IllegalArgumentException e) {
+      throw new IOException("Failed to open workbook", e);
+    }
     return new ExcelWorkbookReader(getConfig(), workbook);
   }
 

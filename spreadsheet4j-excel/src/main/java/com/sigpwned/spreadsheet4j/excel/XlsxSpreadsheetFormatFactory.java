@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.poi.UnsupportedFileFormatException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.sigpwned.spreadsheet4j.excel.read.ExcelWorkbookReader;
@@ -90,7 +91,7 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
     XSSFWorkbook workbook;
     try {
       workbook = new XSSFWorkbook(file);
-    } catch (InvalidFormatException e) {
+    } catch (InvalidFormatException | UnsupportedFileFormatException e) {
       throw new IOException("Failed to open workbook", e);
     }
     return new ExcelWorkbookReader(getConfig(), workbook);

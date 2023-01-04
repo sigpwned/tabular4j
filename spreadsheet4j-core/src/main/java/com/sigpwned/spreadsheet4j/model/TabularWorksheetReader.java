@@ -79,21 +79,31 @@ public class TabularWorksheetReader implements Iterable<TabularWorksheetRow>, Au
    */
   public TabularWorksheetRow readRow() throws IOException {
     WorksheetRow row = getDelegate().readRow();
-    return new TabularWorksheetRow(row.getRowIndex(),
-        IntStream.range(0, row.size())
-            .mapToObj(i -> new TabularWorksheetCell(row.getCell(i), getColumnName(i)))
-            .collect(toList()));
+    return Optional.ofNullable(row)
+        .map(r -> new TabularWorksheetRow(r.getRowIndex(),
+            IntStream.range(0, r.size())
+                .mapToObj(i -> new TabularWorksheetCell(r.getCell(i), getColumnName(i)))
+                .collect(toList())))
+        .orElse(null);
   }
 
   public Iterator<TabularWorksheetRow> iterator() {
-    final TabularWorksheetRow first;
+    IOException problem;
+    TabularWorksheetRow first;
     try {
       first = readRow();
+      problem = null;
     } catch (IOException e) {
-      throw new UncheckedIOException("Failed to read row", e);
+      first = null;
+      problem = e;
     }
+
+    final IOException theproblem = problem;
+    final TabularWorksheetRow thefirst = first;
+
     return new Iterator<>() {
-      private TabularWorksheetRow next = first;
+      private TabularWorksheetRow next = thefirst;
+      private IOException cause = theproblem;
 
       @Override
       public boolean hasNext() {
@@ -102,12 +112,17 @@ public class TabularWorksheetReader implements Iterable<TabularWorksheetRow>, Au
 
       @Override
       public TabularWorksheetRow next() {
+        if (cause != null)
+          throw new UncheckedIOException("Failed to read row", cause);
+
         TabularWorksheetRow result = next;
         try {
           next = readRow();
         } catch (IOException e) {
-          throw new UncheckedIOException("Failed to read row", e);
+          cause = e;
+          throw new UncheckedIOException("Failed to read row", cause);
         }
+
         return result;
       }
     };

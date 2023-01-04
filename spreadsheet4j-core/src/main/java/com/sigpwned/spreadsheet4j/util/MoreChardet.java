@@ -71,6 +71,11 @@ public class MoreChardet {
   }
 
   private static boolean isTextHeuristic(byte[] preview, Charset detectedCharset) {
+    if (preview.length >= 2 && preview[0] == 'P' && preview[1] == 'K') {
+      // This is probably a zip file. False!
+      return false;
+    }
+
     final AtomicInteger alphanum = new AtomicInteger(0);
     final AtomicInteger total = new AtomicInteger(0);
     new String(preview, detectedCharset).codePoints().forEach(cp -> {
@@ -78,6 +83,7 @@ public class MoreChardet {
         alphanum.incrementAndGet();
       total.incrementAndGet();
     });
+
     return alphanum.get() > total.get() / 2;
   }
 }

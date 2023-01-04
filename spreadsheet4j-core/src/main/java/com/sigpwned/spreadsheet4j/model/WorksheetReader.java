@@ -41,14 +41,22 @@ public interface WorksheetReader extends Iterable<WorksheetRow>, AutoCloseable {
   public WorksheetRow readRow() throws IOException;
 
   public default Iterator<WorksheetRow> iterator() {
-    final WorksheetRow first;
+    IOException problem;
+    WorksheetRow first;
     try {
       first = readRow();
+      problem = null;
     } catch (IOException e) {
-      throw new UncheckedIOException("Failed to read row", e);
+      first = null;
+      problem = e;
     }
+
+    final IOException theproblem = problem;
+    final WorksheetRow thefirst = first;
+
     return new Iterator<>() {
-      private WorksheetRow next = first;
+      private WorksheetRow next = thefirst;
+      private IOException cause = theproblem;
 
       @Override
       public boolean hasNext() {
@@ -57,12 +65,17 @@ public interface WorksheetReader extends Iterable<WorksheetRow>, AutoCloseable {
 
       @Override
       public WorksheetRow next() {
+        if (cause != null)
+          throw new UncheckedIOException("Failed to read row", cause);
+
         WorksheetRow result = next;
         try {
           next = readRow();
         } catch (IOException e) {
-          throw new UncheckedIOException("Failed to read row", e);
+          cause = e;
+          throw new UncheckedIOException("Failed to read row", cause);
         }
+
         return result;
       }
     };
