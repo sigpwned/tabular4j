@@ -20,6 +20,7 @@
 package com.sigpwned.tabular4j.csv.write;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -72,7 +73,7 @@ public class CsvWorksheetWriter implements WorksheetWriter {
         field = field.withQuoted(false).withText("");
       }
       return field;
-    }).toList();
+    }).collect(toList());
 
     // We don't care about style at all
     delegate.writeNext(CsvRecord.of(fields));

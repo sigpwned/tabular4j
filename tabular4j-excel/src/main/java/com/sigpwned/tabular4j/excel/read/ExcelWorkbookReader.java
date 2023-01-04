@@ -20,6 +20,7 @@
 package com.sigpwned.tabular4j.excel.read;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import java.io.IOException;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ExcelWorkbookReader implements WorkbookReader {
 
   @Override
   public List<String> getWorksheetNames() {
-    return getVisibleSheets().stream().map(Sheet::getSheetName).toList();
+    return getVisibleSheets().stream().map(Sheet::getSheetName).collect(toList());
   }
 
   @Override

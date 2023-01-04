@@ -19,6 +19,7 @@
  */
 package com.sigpwned.tabular4j.excel;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ServiceLoadingTest {
   public void smokeTest() {
     assertThat(
         new SpreadsheetFactory().getFormats().stream()
-            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().toList(),
+            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().collect(toList()),
         is(List.of(XlsSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION,
             XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION)));
   }

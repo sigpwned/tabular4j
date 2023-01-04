@@ -20,6 +20,7 @@
 package com.sigpwned.tabular4j.csv.read;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.stream.IntStream;
 import com.sigpwned.csv4j.CsvRecord;
@@ -57,8 +58,10 @@ public class CsvWorksheetReader implements WorksheetReader {
 
     CsvRecord row = getReader().readNext();
     if (row != null) {
-      result = new CsvWorksheetRow(rowIndex++, IntStream.range(0, row.getFields().size())
-          .mapToObj(i -> new CsvWorksheetCell(i, row.getFields().get(i), getConfig())).toList());
+      result = new CsvWorksheetRow(rowIndex++,
+          IntStream.range(0, row.getFields().size())
+              .mapToObj(i -> new CsvWorksheetCell(i, row.getFields().get(i), getConfig()))
+              .collect(toList()));
     } else {
       result = null;
     }

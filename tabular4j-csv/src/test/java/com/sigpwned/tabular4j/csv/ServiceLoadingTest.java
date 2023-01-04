@@ -19,20 +19,20 @@
  */
 package com.sigpwned.tabular4j.csv;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.List;
 import org.junit.Test;
 import com.sigpwned.tabular4j.SpreadsheetFactory;
 import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
-import com.sigpwned.tabular4j.csv.CsvSpreadsheetFormatFactory;
 
 public class ServiceLoadingTest {
   @Test
   public void smokeTest() {
     assertThat(
         new SpreadsheetFactory().getFormats().stream()
-            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().toList(),
+            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().collect(toList()),
         is(List.of(CsvSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION)));
   }
 }

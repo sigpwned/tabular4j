@@ -19,6 +19,7 @@
  */
 package com.sigpwned.tabular4j.excel;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
@@ -81,7 +82,7 @@ public abstract class ExcelTestBase<F extends ExcelSpreadsheetFormatFactory> {
     try (WorksheetReader r = format.readActiveWorksheet(source)) {
       // This should throw an exception
       for (WorksheetRow row : r) {
-        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).toList());
+        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).collect(toList()));
       }
     }
 
@@ -98,7 +99,7 @@ public abstract class ExcelTestBase<F extends ExcelSpreadsheetFormatFactory> {
     try (WorksheetReader r = format.readActiveWorksheet(source)) {
       // This should throw an exception
       for (WorksheetRow row : r) {
-        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).toList());
+        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).collect(toList()));
       }
     }
 
@@ -115,7 +116,7 @@ public abstract class ExcelTestBase<F extends ExcelSpreadsheetFormatFactory> {
     try (WorksheetReader r = format.readActiveWorksheet(source)) {
       // This should throw an exception
       for (WorksheetRow row : r) {
-        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).toList());
+        content.add(row.getCells().stream().map(c -> c.getValue(String.class)).collect(toList()));
       }
     }
 
