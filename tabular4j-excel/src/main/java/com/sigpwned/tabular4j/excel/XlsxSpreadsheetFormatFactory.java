@@ -27,9 +27,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.poi.UnsupportedFileFormatException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.sigpwned.tabular4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.tabular4j.excel.write.ExcelWorkbookWriter;
+import com.sigpwned.tabular4j.excel.write.ExcelWorksheetWriter;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookWriter;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
@@ -155,19 +157,16 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
   @Override
   public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
     final XSSFWorkbook workbook = new XSSFWorkbook();
-    final WorkbookWriter parent = new ExcelWorkbookWriter(getConfig(), workbook);
-    final WorksheetWriter delegate = parent.getWorksheet("main");
+    final XSSFSheet worksheet = workbook.createSheet("main");
+    final WorksheetWriter delegate = new ExcelWorksheetWriter(getConfig(), worksheet, 0);
     return new ForwardingWorksheetWriter(delegate) {
       @Override
       public void close() throws IOException {
-        try {
-          try (OutputStream out = sink.getOutputStream()) {
-            workbook.write(out);
-          }
-        } finally {
-          super.close();
-          parent.close();
+        try (OutputStream out = sink.getOutputStream()) {
+          workbook.write(out);
         }
+        super.close();
+        workbook.close();
       }
     };
   }

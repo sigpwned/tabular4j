@@ -26,10 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import com.sigpwned.tabular4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.tabular4j.excel.write.ExcelWorkbookWriter;
+import com.sigpwned.tabular4j.excel.write.ExcelWorksheetWriter;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookWriter;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
@@ -155,19 +157,16 @@ public class XlsSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactor
   @Override
   public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
     final HSSFWorkbook workbook = new HSSFWorkbook();
-    final WorkbookWriter parent = new ExcelWorkbookWriter(getConfig(), workbook);
-    final WorksheetWriter delegate = parent.getWorksheet("main");
+    final HSSFSheet worksheet = workbook.createSheet("main");
+    final WorksheetWriter delegate = new ExcelWorksheetWriter(getConfig(), worksheet, 0);
     return new ForwardingWorksheetWriter(delegate) {
       @Override
       public void close() throws IOException {
-        try {
-          try (OutputStream out = sink.getOutputStream()) {
-            workbook.write(out);
-          }
-        } finally {
-          super.close();
-          parent.close();
+        try (OutputStream out = sink.getOutputStream()) {
+          workbook.write(out);
         }
+        super.close();
+        workbook.close();
       }
     };
   }
