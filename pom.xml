@@ -19,7 +19,6 @@
         <connection>scm:git:ssh://git@github.com/sigpwned/tabular4j.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/sigpwned/tabular4j.git</developerConnection>
         <url>https://github.com/sigpwned/tabular4j/tree/main</url>
-        <tag>v70.1.0</tag>
     </scm>
 
     <licenses>
@@ -59,7 +58,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <icu4j.version>72.1</icu4j.version>
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>1.7.36</slf4j.version>
         <junit.version>4.13.2</junit.version>
