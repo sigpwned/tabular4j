@@ -19,6 +19,7 @@
  */
 package com.sigpwned.tabular4j.model;
 
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +49,8 @@ public class TabularWorksheetHeaderWriter {
       throw new NullPointerException();
     if (headers.isEmpty())
       throw new IllegalArgumentException("no headers");
-    getDelegate().writeRow(headers.stream().map(WorksheetCellDefinition::ofValue).toList());
+    getDelegate()
+        .writeRow(headers.stream().map(WorksheetCellDefinition::ofValue).collect(toList()));
     return new TabularWorksheetRowWriter(getDelegate(), headers);
   }
 
