@@ -22,6 +22,7 @@ package com.sigpwned.tabular4j.model;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -67,6 +68,8 @@ public interface WorksheetReader extends Iterable<WorksheetRow>, AutoCloseable {
       public WorksheetRow next() {
         if (cause != null)
           throw new UncheckedIOException("Failed to read row", cause);
+        if (next == null)
+          throw new NoSuchElementException();
 
         WorksheetRow result = next;
         try {

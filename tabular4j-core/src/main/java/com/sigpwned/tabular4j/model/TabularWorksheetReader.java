@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Spliterator;
@@ -114,6 +115,8 @@ public class TabularWorksheetReader implements Iterable<TabularWorksheetRow>, Au
       public TabularWorksheetRow next() {
         if (cause != null)
           throw new UncheckedIOException("Failed to read row", cause);
+        if (next == null)
+          throw new NoSuchElementException();
 
         TabularWorksheetRow result = next;
         try {

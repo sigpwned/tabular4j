@@ -162,11 +162,14 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
     return new ForwardingWorksheetWriter(delegate) {
       @Override
       public void close() throws IOException {
-        try (OutputStream out = sink.getOutputStream()) {
-          workbook.write(out);
+        try {
+          try (OutputStream out = sink.getOutputStream()) {
+            workbook.write(out);
+          }
+        } finally {
+          super.close();
+          workbook.close();
         }
-        super.close();
-        workbook.close();
       }
     };
   }
