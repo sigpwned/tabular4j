@@ -2,7 +2,7 @@
  * =================================LICENSE_START==================================
  * spreadsheet4j-core
  * ====================================SECTION=====================================
- * Copyright (C) 2022 - 2023 Andy Boothe
+ * Copyright (C) 2022 Andy Boothe
  * ====================================SECTION=====================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,75 +17,49 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.forwarding;
+package com.sigpwned.spreadsheet4j.model;
 
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
-import com.sigpwned.spreadsheet4j.model.WorkbookReader;
-import com.sigpwned.spreadsheet4j.model.WorksheetReader;
+import java.util.stream.IntStream;
 
-public class ForwardingWorkbookReader implements WorkbookReader {
+public class TabularWorkbookReader implements AutoCloseable {
   private final WorkbookReader delegate;
 
-  public ForwardingWorkbookReader(WorkbookReader delegate) {
+  public TabularWorkbookReader(WorkbookReader delegate) {
     this.delegate = requireNonNull(delegate);
   }
 
-  /**
-   * @return
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookReader#getWorksheetCount()
-   */
   public int getWorksheetCount() {
     return getDelegate().getWorksheetCount();
   }
 
-
-  /**
-   * @return
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookReader#getWorksheetNames()
-   */
   public List<String> getWorksheetNames() {
     return getDelegate().getWorksheetNames();
   }
 
-
-  /**
-   * @param index
-   * @return
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookReader#getWorksheet(int)
-   */
-  public WorksheetReader getWorksheet(int index) throws IOException {
-    return getDelegate().getWorksheet(index);
+  public TabularWorksheetReader getWorksheet(int index) throws IOException {
+    return new TabularWorksheetReader(getDelegate().getWorksheet(index));
   }
 
-
-  /**
-   * @param name
-   * @return
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookReader#findWorksheetByName(java.lang.String)
-   */
-  public Optional<WorksheetReader> findWorksheetByName(String name) throws IOException {
-    return getDelegate().findWorksheetByName(name);
+  public Optional<TabularWorksheetReader> findWorksheetByName(String name) throws IOException {
+    try {
+      return IntStream.range(0, getWorksheetCount())
+          .filter(i -> getWorksheetNames().get(i).equals(name)).mapToObj(i -> {
+            try {
+              return getWorksheet(i);
+            } catch (IOException e) {
+              throw new UncheckedIOException(e);
+            }
+          }).findFirst();
+    } catch (UncheckedIOException e) {
+      throw (IOException) e.getCause();
+    }
   }
 
-  /**
-   * @return
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookReader#getActiveWorksheetIndex()
-   */
-  public int getActiveWorksheetIndex() {
-    return getDelegate().getActiveWorksheetIndex();
-  }
-
-  @Override
-  public WorksheetReader getActiveWorksheet() throws IOException {
-    return getDelegate().getActiveWorksheet();
-  }
-
-  @Override
   public void close() throws IOException {
     getDelegate().close();
   }

@@ -21,7 +21,9 @@ package com.sigpwned.spreadsheet4j.csv.read;
 
 import java.io.IOException;
 import java.util.List;
+import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.spreadsheet4j.csv.CsvConfigRegistry;
+import com.sigpwned.spreadsheet4j.csv.util.Csv;
 import com.sigpwned.spreadsheet4j.io.ByteSource;
 import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.model.WorkbookReader;
@@ -42,8 +44,23 @@ public class CsvWorkbookReader implements WorkbookReader {
   }
 
   @Override
-  public List<WorksheetReader> getWorksheets() {
-    return List.<WorksheetReader>of(new CsvWorksheetReader(getConfig(), getSource()));
+  public List<String> getWorksheetNames() {
+    return List.of(Csv.WORKSHEET_NAME);
+  }
+
+  @Override
+  public int getActiveWorksheetIndex() {
+    return 0;
+  }
+
+  @Override
+  public int getWorksheetCount() {
+    return 1;
+  }
+
+  @Override
+  public WorksheetReader getWorksheet(int index) throws IOException {
+    return new CsvWorksheetReader(getConfig(), new CsvReader(getSource().getReader()));
   }
 
   @Override

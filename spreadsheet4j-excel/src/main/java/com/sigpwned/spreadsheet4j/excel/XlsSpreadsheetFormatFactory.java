@@ -42,6 +42,8 @@ import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
 public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
+  public static final String DEFAULT_FILE_EXTENSION = "xls";
+
   private final ExcelConfigRegistry config;
 
   public XlsSpreadsheetFormatFactory() {
@@ -171,5 +173,10 @@ public class XlsSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
    */
   public ExcelConfigRegistry getConfig() {
     return config;
+  }
+
+  @Override
+  public String getDefaultFileExtension() {
+    return DEFAULT_FILE_EXTENSION;
   }
 }

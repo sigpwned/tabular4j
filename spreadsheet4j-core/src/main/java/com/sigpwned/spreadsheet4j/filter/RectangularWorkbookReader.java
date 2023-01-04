@@ -17,24 +17,50 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j;
+package com.sigpwned.spreadsheet4j.filter;
 
+import static java.util.Objects.requireNonNull;
 import java.io.IOException;
-import com.sigpwned.spreadsheet4j.io.ByteSink;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
+import java.util.List;
 import com.sigpwned.spreadsheet4j.model.WorkbookReader;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
-public interface SpreadsheetFormatFactory {
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException;
+public class RectangularWorkbookReader implements WorkbookReader {
+  private final WorkbookReader delegate;
 
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
+  public RectangularWorkbookReader(WorkbookReader delegate) {
+    this.delegate = requireNonNull(delegate);
+  }
 
-  public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;
+  @Override
+  public int getWorksheetCount() {
+    return getDelegate().getWorksheetCount();
+  }
 
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException;
+  @Override
+  public List<String> getWorksheetNames() {
+    return getDelegate().getWorksheetNames();
+  }
 
-  public String getDefaultFileExtension();
+  @Override
+  public int getActiveWorksheetIndex() {
+    return getDelegate().getActiveWorksheetIndex();
+  }
+
+  @Override
+  public WorksheetReader getWorksheet(int index) throws IOException {
+    return new RectangularWorksheetReader(getDelegate().getWorksheet(index));
+  }
+
+  @Override
+  public void close() throws IOException {
+    getDelegate().close();
+  }
+
+  /**
+   * @return the delegate
+   */
+  private WorkbookReader getDelegate() {
+    return delegate;
+  }
 }

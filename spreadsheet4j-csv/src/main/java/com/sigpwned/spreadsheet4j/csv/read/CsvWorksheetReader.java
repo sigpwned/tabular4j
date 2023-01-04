@@ -28,19 +28,17 @@ import com.sigpwned.spreadsheet4j.csv.CsvConfigRegistry;
 import com.sigpwned.spreadsheet4j.csv.CsvWorksheetCell;
 import com.sigpwned.spreadsheet4j.csv.CsvWorksheetRow;
 import com.sigpwned.spreadsheet4j.csv.util.Csv;
-import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetRow;
 
 public class CsvWorksheetReader implements WorksheetReader {
   private final CsvConfigRegistry config;
-  private final CharSource source;
-  private CsvReader delegate;
+  private final CsvReader reader;
   private int rowIndex;
 
-  public CsvWorksheetReader(CsvConfigRegistry config, CharSource source) {
+  public CsvWorksheetReader(CsvConfigRegistry config, CsvReader reader) {
     this.config = requireNonNull(config);
-    this.source = requireNonNull(source);
+    this.reader = requireNonNull(reader);
   }
 
   @Override
@@ -57,10 +55,7 @@ public class CsvWorksheetReader implements WorksheetReader {
   public WorksheetRow readRow() throws IOException {
     WorksheetRow result;
 
-    if (delegate == null)
-      delegate = new CsvReader(getSource().getReader());
-
-    CsvRecord row = delegate.readNext();
+    CsvRecord row = getReader().readNext();
     if (row != null) {
       result = new CsvWorksheetRow(rowIndex++, IntStream.range(0, row.getFields().size())
           .mapToObj(i -> new CsvWorksheetCell(i, row.getFields().get(i), getConfig())).toList());
@@ -79,8 +74,7 @@ public class CsvWorksheetReader implements WorksheetReader {
 
   @Override
   public void close() throws IOException {
-    if (delegate != null)
-      delegate.close();
+    getReader().close();
   }
 
   /**
@@ -91,9 +85,9 @@ public class CsvWorksheetReader implements WorksheetReader {
   }
 
   /**
-   * @return the source
+   * @return the reader
    */
-  private CharSource getSource() {
-    return source;
+  private CsvReader getReader() {
+    return reader;
   }
 }

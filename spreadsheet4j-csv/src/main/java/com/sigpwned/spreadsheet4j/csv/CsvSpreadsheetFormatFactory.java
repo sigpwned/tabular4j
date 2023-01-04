@@ -22,6 +22,7 @@ package com.sigpwned.spreadsheet4j.csv;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.spreadsheet4j.SpreadsheetFormatFactory;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorkbookReader;
 import com.sigpwned.spreadsheet4j.csv.read.CsvWorksheetReader;
@@ -34,6 +35,8 @@ import com.sigpwned.spreadsheet4j.io.CharSource;
 import com.sigpwned.spreadsheet4j.util.MoreChardet;
 
 public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
+  public static final String DEFAULT_FILE_EXTENSION = "csv";
+
   private final CsvConfigRegistry config;
 
   public CsvSpreadsheetFormatFactory() {
@@ -59,7 +62,7 @@ public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   }
 
   public CsvWorksheetReader readActiveWorksheet(CharSource source) throws IOException {
-    return new CsvWorksheetReader(getConfig(), source);
+    return new CsvWorksheetReader(getConfig(), new CsvReader(source.getReader()));
   }
 
   @Override
@@ -85,5 +88,10 @@ public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
    */
   public CsvConfigRegistry getConfig() {
     return config;
+  }
+
+  @Override
+  public String getDefaultFileExtension() {
+    return DEFAULT_FILE_EXTENSION;
   }
 }

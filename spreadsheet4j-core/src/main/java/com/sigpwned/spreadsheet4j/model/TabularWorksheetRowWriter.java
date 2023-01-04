@@ -17,38 +17,49 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.forwarding;
+package com.sigpwned.spreadsheet4j.model;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 import java.io.IOException;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
+import java.util.List;
 
-public class ForwardingWorkbookWriter implements WorkbookWriter {
-  private final WorkbookWriter delegate;
+public class TabularWorksheetRowWriter implements AutoCloseable {
+  private final WorksheetWriter delegate;
+  private final List<String> headers;
 
-  public ForwardingWorkbookWriter(WorkbookWriter delegate) {
-    this.delegate = delegate;
+  public TabularWorksheetRowWriter(WorksheetWriter delegate, List<String> headers) {
+    this.delegate = requireNonNull(delegate);
+    this.headers = unmodifiableList(headers);
   }
 
   /**
-   * @param name
-   * @return
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookWriter#getWorksheet(java.lang.String)
+   * @return the headers
    */
-  public WorksheetWriter getWorksheet(String name) throws IOException {
-    return getDelegate().getWorksheet(name);
+  public List<String> getHeaders() {
+    return headers;
   }
 
-  /**
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookWriter#close()
-   */
+  public int getSheetIndex() {
+    return getDelegate().getSheetIndex();
+  }
+
+  public String getSheetName() {
+    return getDelegate().getSheetName();
+  }
+
+  public void writeRow(List<WorksheetCellDefinition> cells) throws IOException {
+    getDelegate().writeRow(cells);
+  }
+
   public void close() throws IOException {
     getDelegate().close();
   }
 
-  private WorkbookWriter getDelegate() {
+  /**
+   * @return the delegate
+   */
+  private WorksheetWriter getDelegate() {
     return delegate;
   }
 }

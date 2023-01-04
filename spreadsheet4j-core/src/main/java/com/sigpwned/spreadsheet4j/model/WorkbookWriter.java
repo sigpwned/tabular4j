@@ -22,7 +22,13 @@ package com.sigpwned.spreadsheet4j.model;
 import java.io.IOException;
 
 public interface WorkbookWriter extends AutoCloseable {
-  public WorksheetWriter getWorksheet(String name);
+  public WorksheetWriter getWorksheet(String name) throws IOException;
+
+  // TODO Set active sheet?
+
+  // TODO Do we need to reference sheets we just created? By index?
+  
+  // TODO What if we re-open sheet with existing name? Clobber it? Exception?
 
   public void close() throws IOException;
 }

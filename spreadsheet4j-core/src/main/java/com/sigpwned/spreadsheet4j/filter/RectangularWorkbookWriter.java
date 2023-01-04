@@ -17,24 +17,34 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j;
+package com.sigpwned.spreadsheet4j.filter;
 
+import static java.util.Objects.requireNonNull;
 import java.io.IOException;
-import com.sigpwned.spreadsheet4j.io.ByteSink;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
-import com.sigpwned.spreadsheet4j.model.WorkbookReader;
 import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
-public interface SpreadsheetFormatFactory {
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException;
+public class RectangularWorkbookWriter implements WorkbookWriter {
+  private final WorkbookWriter delegate;
 
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
+  public RectangularWorkbookWriter(WorkbookWriter delegate) {
+    this.delegate = requireNonNull(delegate);
+  }
 
-  public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;
+  @Override
+  public WorksheetWriter getWorksheet(String name) throws IOException {
+    return new RectangularWorksheetWriter(getDelegate().getWorksheet(name));
+  }
 
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException;
+  @Override
+  public void close() throws IOException {
+    getDelegate().close();
+  }
 
-  public String getDefaultFileExtension();
+  /**
+   * @return the delegate
+   */
+  private WorkbookWriter getDelegate() {
+    return delegate;
+  }
 }

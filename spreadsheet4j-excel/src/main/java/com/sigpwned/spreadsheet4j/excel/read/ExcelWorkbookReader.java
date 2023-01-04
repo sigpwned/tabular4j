@@ -19,12 +19,13 @@
  */
 package com.sigpwned.spreadsheet4j.excel.read;
 
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.SheetVisibility;
 import org.apache.poi.ss.usermodel.Workbook;
 import com.sigpwned.spreadsheet4j.excel.ExcelConfigRegistry;
 import com.sigpwned.spreadsheet4j.model.WorkbookReader;
@@ -32,30 +33,20 @@ import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 
 public class ExcelWorkbookReader implements WorkbookReader {
   private final ExcelConfigRegistry config;
-  private final Workbook delegate;
-  private final List<ExcelWorksheetReader> worksheets;
+  private final Workbook workbook;
+  private final List<Sheet> visibleSheets;
 
-  public ExcelWorkbookReader(ExcelConfigRegistry config, Workbook delegate) {
+  public ExcelWorkbookReader(ExcelConfigRegistry config, Workbook workbook) {
     this.config = requireNonNull(config);
-    this.delegate = requireNonNull(delegate);
-
-    List<ExcelWorksheetReader> worksheets = new ArrayList<>();
-    for (int sheetIndex = 0; sheetIndex < getDelegate().getNumberOfSheets(); sheetIndex++) {
-      Sheet worksheet = getDelegate().getSheetAt(sheetIndex);
-      boolean active = getDelegate().getActiveSheetIndex() == sheetIndex;
-      worksheets.add(new ExcelWorksheetReader(getConfig(), worksheet, sheetIndex, active));
+    this.workbook = requireNonNull(workbook);
+    this.visibleSheets = IntStream.range(0, getWorkbook().getNumberOfSheets())
+        .filter(i -> getWorkbook().getSheetVisibility(i) == SheetVisibility.VISIBLE)
+        .mapToObj(i -> getWorkbook().getSheetAt(i)).collect(toUnmodifiableList());
+    if (getVisibleSheets().isEmpty()) {
+      // This should never happen because "An Excel Workbook must contain at least one visible
+      // worksheet," per the Excel UI.
+      throw new IllegalArgumentException("no visible sheets");
     }
-    if (worksheets.isEmpty())
-      throw new IllegalArgumentException("no sheets");
-
-    this.worksheets = unmodifiableList(worksheets);
-
-    long activeSheetCount = getWorksheets().stream().filter(WorksheetReader::isActive).count();
-    if (activeSheetCount < 1L)
-      throw new IllegalArgumentException("no active sheet");
-    else if (activeSheetCount > 1L)
-      throw new IllegalArgumentException(
-          "must have exactly 1 active sheet, not " + activeSheetCount);
   }
 
   /**
@@ -66,20 +57,43 @@ public class ExcelWorkbookReader implements WorkbookReader {
   }
 
   @Override
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public List<WorksheetReader> getWorksheets() {
-    return (List) worksheets;
+  public List<String> getWorksheetNames() {
+    return getVisibleSheets().stream().map(Sheet::getSheetName).toList();
+  }
+
+  @Override
+  public int getWorksheetCount() {
+    return getVisibleSheets().size();
+  }
+
+  @Override
+  public int getActiveWorksheetIndex() {
+    List<Sheet> visibleSheets = getVisibleSheets();
+    int activeSheetIndex = getWorkbook().getActiveSheetIndex();
+    return IntStream.range(0, visibleSheets.size())
+        .filter(i -> getWorkbook().getSheetIndex(visibleSheets.get(i)) == activeSheetIndex)
+        .findFirst().orElse(0);
+  }
+
+  @Override
+  public WorksheetReader getWorksheet(int index) throws IOException {
+    return new ExcelWorksheetReader(getConfig(), getVisibleSheets().get(index), index,
+        index == getActiveWorksheetIndex());
   }
 
   @Override
   public void close() throws IOException {
-    getDelegate().close();
+    getWorkbook().close();
   }
 
   /**
    * @return the delegate
    */
-  private Workbook getDelegate() {
-    return delegate;
+  private Workbook getWorkbook() {
+    return workbook;
+  }
+
+  private List<Sheet> getVisibleSheets() {
+    return visibleSheets;
   }
 }

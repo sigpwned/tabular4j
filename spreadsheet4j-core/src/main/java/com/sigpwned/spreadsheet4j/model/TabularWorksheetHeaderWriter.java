@@ -17,38 +17,40 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j.forwarding;
+package com.sigpwned.spreadsheet4j.model;
 
 import java.io.IOException;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
+import java.util.List;
+import com.sigpwned.spreadsheet4j.filter.RectangularWorksheetWriter;
 
-public class ForwardingWorkbookWriter implements WorkbookWriter {
-  private final WorkbookWriter delegate;
+public class TabularWorksheetHeaderWriter {
+  private final WorksheetWriter delegate;
 
-  public ForwardingWorkbookWriter(WorkbookWriter delegate) {
-    this.delegate = delegate;
+  public TabularWorksheetHeaderWriter(WorksheetWriter delegate) {
+    this.delegate = new RectangularWorksheetWriter(delegate);
+  }
+
+  public int getSheetIndex() {
+    return getDelegate().getSheetIndex();
+  }
+
+  public String getSheetName() {
+    return getDelegate().getSheetName();
+  }
+
+  public TabularWorksheetRowWriter writeHeaders(List<String> headers) throws IOException {
+    if (headers == null)
+      throw new NullPointerException();
+    if (headers.isEmpty())
+      throw new IllegalArgumentException("no headers");
+    getDelegate().writeRow(headers.stream().map(WorksheetCellDefinition::ofValue).toList());
+    return new TabularWorksheetRowWriter(getDelegate(), headers);
   }
 
   /**
-   * @param name
-   * @return
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookWriter#getWorksheet(java.lang.String)
+   * @return the delegate
    */
-  public WorksheetWriter getWorksheet(String name) throws IOException {
-    return getDelegate().getWorksheet(name);
-  }
-
-  /**
-   * @throws IOException
-   * @see com.sigpwned.spreadsheet4j.model.WorkbookWriter#close()
-   */
-  public void close() throws IOException {
-    getDelegate().close();
-  }
-
-  private WorkbookWriter getDelegate() {
+  private WorksheetWriter getDelegate() {
     return delegate;
   }
 }

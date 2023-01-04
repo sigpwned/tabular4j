@@ -2,7 +2,7 @@
  * =================================LICENSE_START==================================
  * spreadsheet4j-core
  * ====================================SECTION=====================================
- * Copyright (C) 2022 - 2023 Andy Boothe
+ * Copyright (C) 2022 Andy Boothe
  * ====================================SECTION=====================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,16 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.spreadsheet4j;
+package com.sigpwned.spreadsheet4j.consumer;
 
-import java.io.IOException;
-import com.sigpwned.spreadsheet4j.io.ByteSink;
-import com.sigpwned.spreadsheet4j.io.ByteSource;
-import com.sigpwned.spreadsheet4j.model.WorkbookReader;
-import com.sigpwned.spreadsheet4j.model.WorkbookWriter;
-import com.sigpwned.spreadsheet4j.model.WorksheetReader;
-import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
+import java.util.List;
+import com.sigpwned.spreadsheet4j.model.TabularWorksheetCell;
 
-public interface SpreadsheetFormatFactory {
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException;
+public interface TabularWorksheetConsumer {
+  public default void beginTabularWorksheet(int sheetIndex, String sheetName,
+      List<String> columnNames) {}
 
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
+  public default void endTabularWorksheet() {}
 
-  public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;
-
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException;
-
-  public String getDefaultFileExtension();
+  public default void tabularRow(int rowIndex, List<TabularWorksheetCell> cells) {}
 }

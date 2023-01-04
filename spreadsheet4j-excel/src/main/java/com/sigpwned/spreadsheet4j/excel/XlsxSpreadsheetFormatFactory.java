@@ -42,6 +42,8 @@ import com.sigpwned.spreadsheet4j.model.WorksheetReader;
 import com.sigpwned.spreadsheet4j.model.WorksheetWriter;
 
 public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
+  public static final String DEFAULT_FILE_EXTENSION = "xlsx";
+
   private final ExcelConfigRegistry config;
 
   public XlsxSpreadsheetFormatFactory() {
@@ -176,5 +178,10 @@ public class XlsxSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
    */
   public ExcelConfigRegistry getConfig() {
     return config;
+  }
+
+  @Override
+  public String getDefaultFileExtension() {
+    return DEFAULT_FILE_EXTENSION;
   }
 }

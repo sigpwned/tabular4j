@@ -20,25 +20,37 @@
 package com.sigpwned.spreadsheet4j.model;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public interface WorkbookReader extends AutoCloseable {
-  /**
-   * @return the worksheets
-   */
-  public List<WorksheetReader> getWorksheets();
+  public int getWorksheetCount();
 
-  public default WorksheetReader getWorksheetByIndex(int index) {
-    return getWorksheets().get(index);
+  public List<String> getWorksheetNames();
+
+  public int getActiveWorksheetIndex();
+
+  public WorksheetReader getWorksheet(int index) throws IOException;
+
+  public default Optional<WorksheetReader> findWorksheetByName(String name) throws IOException {
+    try {
+      return IntStream.range(0, getWorksheetCount())
+          .filter(i -> getWorksheetNames().get(i).equals(name)).mapToObj(i -> {
+            try {
+              return getWorksheet(i);
+            } catch (IOException e) {
+              throw new UncheckedIOException(e);
+            }
+          }).findFirst();
+    } catch (UncheckedIOException e) {
+      throw (IOException) e.getCause();
+    }
   }
 
-  public default Optional<WorksheetReader> findWorksheetByName(String name) {
-    return getWorksheets().stream().filter(s -> s.getSheetName().equals(name)).findFirst();
-  }
-
-  public default WorksheetReader getActiveWorksheet() {
-    return getWorksheets().stream().filter(WorksheetReader::isActive).findFirst().get();
+  public default WorksheetReader getActiveWorksheet() throws IOException {
+    return getWorksheet(getActiveWorksheetIndex());
   }
 
   public void close() throws IOException;

@@ -19,32 +19,46 @@
  */
 package com.sigpwned.spreadsheet4j.model;
 
+import static java.util.Collections.unmodifiableList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface WorksheetRow extends Iterable<WorksheetCell> {
-  public int getRowIndex();
+public class TabularWorksheetRow implements Iterable<TabularWorksheetCell> {
+  private final int rowIndex;
+  private final List<TabularWorksheetCell> cells;
 
-  public List<WorksheetCell> getCells();
-
-  public default int getCellCount() {
-    return getCells().size();
+  public TabularWorksheetRow(int rowIndex, List<TabularWorksheetCell> cells) {
+    this.rowIndex = rowIndex;
+    this.cells = unmodifiableList(cells);
   }
 
-  public default WorksheetCell getCell(int index) {
+  public int getRowIndex() {
+    return rowIndex;
+  }
+
+  public List<TabularWorksheetCell> getCells() {
+    return cells;
+  }
+
+  public TabularWorksheetCell getCell(int index) {
     return getCells().get(index);
   }
 
-  public default int size() {
+  public Optional<TabularWorksheetCell> findCellByColumnName(String columnName) {
+    return stream().filter(c -> c.getColumnName().equals(columnName)).findFirst();
+  }
+
+  public int size() {
     return getCells().size();
   }
 
-  public default Iterator<WorksheetCell> iterator() {
+  public Iterator<TabularWorksheetCell> iterator() {
     return getCells().iterator();
   }
 
-  public default Stream<WorksheetCell> stream() {
+  public Stream<TabularWorksheetCell> stream() {
     return getCells().stream();
   }
 }
