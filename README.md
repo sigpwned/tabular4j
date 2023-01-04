@@ -4,13 +4,12 @@ A framework for reading and writing tabular data using popular data formats, esp
 
 ## Motivation
 
-Tabular data is an important interface between humans and machine. However, supporting multiple spreadsheet formats transparently is complex. This library provides a framework of implementations, facades, and adapters for reading and writing tabular data using popular spreadsheet data formats.
+Tabular data is an important interface between humans and machine. However, supporting multiple spreadsheet formats transparently is complex. This library provides a framework of adapters and facades for reading and writing tabular data using popular spreadsheet data formats.
 
 ## Goals
 
-* To support the production and consumption of tabular data in common spreadsheet file formats.
+* To support the straightforward reading and writing of tabular data in common file formats, especially spreadsheets.
 * To support common value types for cells to streamline development and minimize errors.
-* To support common styling formats for cells to make data exchange as clear as possible.
 
 ## Non-Goals
 
