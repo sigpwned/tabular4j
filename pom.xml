@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sigpwned</groupId>
-    <artifactId>spreadsheet4j</artifactId>
+    <artifactId>tabular4j</artifactId>
     <version>0.0.0-SNAPSHOT</version>
-    <name>spreadsheet4j</name>
+    <name>tabular4j</name>
     <inceptionYear>2022</inceptionYear>
     <description>Spreadsheet Processing Library for Java 11+</description>
-    <url>https://github.com/sigpwned/spreadsheet4j</url>
+    <url>https://github.com/sigpwned/tabular4j</url>
     <packaging>pom</packaging>
 
     <organization>
@@ -16,9 +16,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/sigpwned/spreadsheet4j.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/sigpwned/spreadsheet4j.git</developerConnection>
-        <url>https://github.com/sigpwned/spreadsheet4j/tree/main</url>
+        <connection>scm:git:ssh://git@github.com/sigpwned/tabular4j.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/sigpwned/tabular4j.git</developerConnection>
+        <url>https://github.com/sigpwned/tabular4j/tree/main</url>
         <tag>v70.1.0</tag>
     </scm>
 
@@ -51,7 +51,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/sigpwned/spreadsheet4j</url>
+        <url>https://github.com/sigpwned/tabular4j</url>
     </issueManagement>
 
     <properties>
@@ -67,9 +67,9 @@
     </properties>
 
     <modules>
-        <module>spreadsheet4j-core</module>
-        <module>spreadsheet4j-csv</module>
-        <module>spreadsheet4j-excel</module>
+        <module>tabular4j-core</module>
+        <module>tabular4j-csv</module>
+        <module>tabular4j-excel</module>
     </modules>
 
     <build>

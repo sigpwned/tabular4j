@@ -1,4 +1,4 @@
-# SPREADSHEET4J
+# TABULAR4J
 
 A framework for reading and writing tabular data using popular data formats, especially spreadsheets.
 
