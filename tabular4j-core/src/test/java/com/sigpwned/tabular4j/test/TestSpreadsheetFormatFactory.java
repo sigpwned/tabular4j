@@ -32,6 +32,10 @@ import java.util.Arrays;
 import java.util.List;
 import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
 import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
+import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookReader;
+import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookWriter;
+import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
+import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetWriter;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.model.WorkbookReader;
@@ -43,23 +47,23 @@ public class TestSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
 
   @Override
   public WorkbookReader readWorkbook(ByteSource source) throws IOException {
-    return new TestWorkbookReader(lines(source));
+    return new ForwardingWorkbookReader(new TestWorkbookReader(lines(source)));
   }
 
   @Override
   public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException {
-    return new TestWorksheetReader(lines(source).listIterator());
+    return new ForwardingWorksheetReader(new TestWorksheetReader(lines(source).listIterator()));
   }
 
   @Override
   public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException {
-    return new TestWorkbookWriter(sink);
+    return new ForwardingWorkbookWriter(new TestWorkbookWriter(sink));
   }
 
   @Override
   public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
     final List<List<String>> rows = new ArrayList<>();
-    return new TestWorksheetWriter(rows) {
+    return new ForwardingWorksheetWriter(new TestWorksheetWriter(rows)) {
       @Override
       public void close() throws IOException {
         try {
