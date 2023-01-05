@@ -66,9 +66,11 @@
         <sonar.organization>sigpwned</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.exclusions>
-            **/pom.xml,
-            tabular4j-core/com/sigpwned/tabular4j/type/*.java
+            **/pom.xml
         </sonar.exclusions>
+        <sonar.coverage.exclusions>
+            **/com/sigpwned/tabular4j/type/*.java
+        </sonar.coverage.exclusions>
     </properties>
 
     <modules>
