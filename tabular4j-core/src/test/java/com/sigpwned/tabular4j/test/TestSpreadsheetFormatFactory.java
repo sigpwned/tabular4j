@@ -25,7 +25,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
@@ -51,12 +53,22 @@ public class TestSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
 
   @Override
   public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException {
-    throw new UnsupportedOperationException();
+    return new TestWorkbookWriter(sink);
   }
 
   @Override
   public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
-    throw new UnsupportedOperationException();
+    final List<List<String>> rows = new ArrayList<>();
+    return new TestWorksheetWriter(rows) {
+      @Override
+      public void close() throws IOException {
+        try {
+          write(sink, rows);
+        } finally {
+          super.close();
+        }
+      }
+    };
   }
 
   @Override
@@ -93,5 +105,14 @@ public class TestSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
       result = r.lines().map(s -> asList(s.strip().split(","))).collect(toList());
     }
     return result;
+  }
+
+  /* default */ static void write(ByteSink sink, List<List<String>> rows) throws IOException {
+    try (Writer out = sink.asCharSink(StandardCharsets.UTF_8).getWriter()) {
+      for (List<String> row : rows) {
+        out.write(String.join(",", row));
+        out.write("\n");
+      }
+    }
   }
 }

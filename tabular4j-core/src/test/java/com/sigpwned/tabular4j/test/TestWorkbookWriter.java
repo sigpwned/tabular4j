@@ -20,40 +20,36 @@
 package com.sigpwned.tabular4j.test;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import com.sigpwned.tabular4j.model.WorkbookReader;
-import com.sigpwned.tabular4j.model.WorksheetReader;
+import com.sigpwned.tabular4j.io.ByteSink;
+import com.sigpwned.tabular4j.model.WorkbookWriter;
+import com.sigpwned.tabular4j.model.WorksheetWriter;
 
-public class TestWorkbookReader implements WorkbookReader {
-  private final List<List<String>> records;
+public class TestWorkbookWriter implements WorkbookWriter {
+  private final ByteSink sink;
+  private final List<List<String>> rows;
 
-  public TestWorkbookReader(List<List<String>> records) {
-    this.records = unmodifiableList(records);
+  public TestWorkbookWriter(ByteSink sink) {
+    this.sink = requireNonNull(sink);
+    this.rows = new ArrayList<>();
   }
 
   @Override
-  public int getWorksheetCount() {
-    return 1;
+  public WorksheetWriter getWorksheet(String name) throws IOException {
+    rows.clear();
+    return new TestWorksheetWriter(rows);
   }
 
-  @Override
-  public List<String> getWorksheetNames() {
-    return List.of("test");
-  }
-
-  @Override
-  public int getActiveWorksheetIndex() {
-    return 0;
-  }
-
-  @Override
-  public WorksheetReader getWorksheet(int index) throws IOException {
-    return new TestWorksheetReader(records.listIterator());
+  public List<List<String>> rows() {
+    return rows.stream().map(xs -> unmodifiableList(xs)).collect(toUnmodifiableList());
   }
 
   @Override
   public void close() throws IOException {
-    // NOP
+    TestSpreadsheetFormatFactory.write(sink, rows);
   }
 }

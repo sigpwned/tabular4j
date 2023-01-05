@@ -19,37 +19,36 @@
  */
 package com.sigpwned.tabular4j.test;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.List;
-import com.sigpwned.tabular4j.model.WorkbookReader;
-import com.sigpwned.tabular4j.model.WorksheetReader;
+import java.util.Objects;
+import java.util.Optional;
+import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
+import com.sigpwned.tabular4j.model.WorksheetCellValue;
+import com.sigpwned.tabular4j.model.WorksheetWriter;
 
-public class TestWorkbookReader implements WorkbookReader {
-  private final List<List<String>> records;
+public class TestWorksheetWriter implements WorksheetWriter {
+  private final List<List<String>> rows;
 
-  public TestWorkbookReader(List<List<String>> records) {
-    this.records = unmodifiableList(records);
+  public TestWorksheetWriter(List<List<String>> rows) {
+    this.rows = rows;
   }
 
   @Override
-  public int getWorksheetCount() {
-    return 1;
-  }
-
-  @Override
-  public List<String> getWorksheetNames() {
-    return List.of("test");
-  }
-
-  @Override
-  public int getActiveWorksheetIndex() {
+  public int getSheetIndex() {
     return 0;
   }
 
   @Override
-  public WorksheetReader getWorksheet(int index) throws IOException {
-    return new TestWorksheetReader(records.listIterator());
+  public String getSheetName() {
+    return "test";
+  }
+
+  @Override
+  public void writeRow(List<WorksheetCellDefinition> cells) throws IOException {
+    rows.add(cells.stream().map(c -> Optional.ofNullable(c.getValue())
+        .map(WorksheetCellValue::getValue).map(Objects::toString).orElse("")).collect(toList()));
   }
 
   @Override

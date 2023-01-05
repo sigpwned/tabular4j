@@ -86,5 +86,7 @@ public class TestWorksheetReader implements WorksheetReader {
   }
 
   @Override
-  public void close() throws IOException {}
+  public void close() throws IOException {
+    // NOP
+  }
 }
