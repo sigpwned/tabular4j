@@ -19,13 +19,30 @@
  */
 package com.sigpwned.tabular4j.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
+import com.sigpwned.tabular4j.io.source.ByteArrayByteSource;
+import com.sigpwned.tabular4j.io.source.FileByteSource;
+import com.sigpwned.tabular4j.io.source.UrlByteSource;
 
 @FunctionalInterface
 public interface ByteSource {
+  public static FileByteSource ofFile(File file) {
+    return new FileByteSource(file);
+  }
+
+  public static ByteArrayByteSource ofBytes(byte[] bytes) {
+    return new ByteArrayByteSource(bytes);
+  }
+
+  public static UrlByteSource ofUrl(URL url) {
+    return new UrlByteSource(url);
+  }
+
   public InputStream getInputStream() throws IOException;
 
   public default CharSource asCharSource(Charset charset) throws IOException {

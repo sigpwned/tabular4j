@@ -1,8 +1,8 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-core
+ * tabular4j-core
  * ====================================SECTION=====================================
- * Copyright (C) 2022 Andy Boothe
+ * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,34 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.io;
+package com.sigpwned.tabular4j.io.sink;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.nio.charset.Charset;
-import com.sigpwned.tabular4j.io.sink.ByteArrayByteSink;
-import com.sigpwned.tabular4j.io.sink.FileByteSink;
-import com.sigpwned.tabular4j.io.sink.UrlByteSink;
+import com.sigpwned.tabular4j.io.ByteSink;
 
-@FunctionalInterface
-public interface ByteSink {
-  public static FileByteSink ofFile(File file) {
-    return new FileByteSink(file);
+public class ByteArrayByteSink implements ByteSink {
+  private byte[] bytes;
+
+  public ByteArrayByteSink() {}
+
+  @Override
+  public ByteArrayOutputStream getOutputStream() throws IOException {
+    return new ByteArrayOutputStream() {
+      @Override
+      public void close() throws IOException {
+        try {
+          super.close();
+        } finally {
+          ByteArrayByteSink.this.bytes = this.toByteArray();
+        }
+      }
+    };
   }
 
-  public static ByteArrayByteSink ofBytes() {
-    return new ByteArrayByteSink();
-  }
-
-  public static UrlByteSink ofUrl(URL url) {
-    return new UrlByteSink(url);
-  }
-
-  public OutputStream getOutputStream() throws IOException;
-
-  public default CharSink asCharSink(Charset charset) {
-    return () -> new OutputStreamWriter(getOutputStream(), charset);
+  public byte[] getBytes() {
+    if (bytes == null)
+      throw new IllegalStateException("bytes not set");
+    return bytes;
   }
 }

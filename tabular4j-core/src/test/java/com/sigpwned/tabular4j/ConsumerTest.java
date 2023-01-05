@@ -34,6 +34,7 @@ import com.sigpwned.tabular4j.consumer.TabularWorksheetConsumer;
 import com.sigpwned.tabular4j.consumer.WorkbookConsumer;
 import com.sigpwned.tabular4j.consumer.WorksheetConsumer;
 import com.sigpwned.tabular4j.io.ByteSource;
+import com.sigpwned.tabular4j.io.source.UrlByteSource;
 import com.sigpwned.tabular4j.model.TabularWorksheetCell;
 import com.sigpwned.tabular4j.model.WorksheetCell;
 import com.sigpwned.tabular4j.util.Spreadsheets;
@@ -94,7 +95,7 @@ public abstract class ConsumerTest {
   public void tabularWorksheetTest() throws IOException {
     List<String> events = new ArrayList<>();
 
-    Spreadsheets.processActiveTabularWorksheet(getByteSource(), new TabularWorksheetConsumer() {
+    Spreadsheets.processTabularActiveWorksheet(getByteSource(), new TabularWorksheetConsumer() {
       private int nameColumnIndex;
 
       @Override
@@ -190,6 +191,6 @@ public abstract class ConsumerTest {
   }
 
   private ByteSource getByteSource() {
-    return Resources.getResource("mlb_players_2021." + fileExtension)::openStream;
+    return new UrlByteSource(Resources.getResource("mlb_players_2021." + fileExtension));
   }
 }

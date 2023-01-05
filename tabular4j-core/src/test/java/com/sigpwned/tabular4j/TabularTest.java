@@ -24,12 +24,12 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import com.sigpwned.tabular4j.io.sink.ByteArrayByteSink;
+import com.sigpwned.tabular4j.io.source.ByteArrayByteSource;
 import com.sigpwned.tabular4j.model.TabularWorkbookReader;
 import com.sigpwned.tabular4j.model.TabularWorkbookWriter;
 import com.sigpwned.tabular4j.model.TabularWorksheetReader;
@@ -57,21 +57,21 @@ public abstract class TabularTest {
 
   @Test
   public void smokeTest() throws IOException {
-    ByteArrayOutputStream drain = new ByteArrayOutputStream();
+    ByteArrayByteSink sink = new ByteArrayByteSink();
 
     try (TabularWorkbookWriter wb =
-        new SpreadsheetFactory().writeTabularWorkbook(() -> drain, fileExtension)) {
+        new SpreadsheetFactory().writeTabularWorkbook(sink, fileExtension)) {
       try (TabularWorksheetRowWriter ws = wb.getWorksheet("sheet").writeHeaders(HEADERS)) {
         for (List<WorksheetCellDefinition> row : WRITE_ROWS)
           ws.writeRow(row);
       }
     }
 
-    byte[] output = drain.toByteArray();
+    byte[] output = sink.getBytes();
 
     List<List<String>> rows = new ArrayList<>();
     try (TabularWorkbookReader wb =
-        new SpreadsheetFactory().readTabularWorkbook(() -> new ByteArrayInputStream(output))) {
+        new SpreadsheetFactory().readTabularWorkbook(new ByteArrayByteSource(output))) {
       try (TabularWorksheetReader ws = wb.getWorksheet(0)) {
         assertThat(ws.getColumnNames(), is(HEADERS));
         for (TabularWorksheetRow row : ws)

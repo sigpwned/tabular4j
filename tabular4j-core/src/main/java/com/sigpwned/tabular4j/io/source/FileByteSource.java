@@ -1,8 +1,8 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-core
+ * tabular4j-core
  * ====================================SECTION=====================================
- * Copyright (C) 2022 Andy Boothe
+ * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,30 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.io;
+package com.sigpwned.tabular4j.io.source;
 
+import static java.util.Objects.requireNonNull;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.nio.charset.Charset;
-import com.sigpwned.tabular4j.io.sink.ByteArrayByteSink;
-import com.sigpwned.tabular4j.io.sink.FileByteSink;
-import com.sigpwned.tabular4j.io.sink.UrlByteSink;
+import com.sigpwned.tabular4j.io.ByteSource;
 
-@FunctionalInterface
-public interface ByteSink {
-  public static FileByteSink ofFile(File file) {
-    return new FileByteSink(file);
+public class FileByteSource implements ByteSource {
+  private final File file;
+
+  public FileByteSource(File file) {
+    this.file = requireNonNull(file);
   }
 
-  public static ByteArrayByteSink ofBytes() {
-    return new ByteArrayByteSink();
+  @Override
+  public FileInputStream getInputStream() throws IOException {
+    return new FileInputStream(getFile());
   }
 
-  public static UrlByteSink ofUrl(URL url) {
-    return new UrlByteSink(url);
-  }
-
-  public OutputStream getOutputStream() throws IOException;
-
-  public default CharSink asCharSink(Charset charset) {
-    return () -> new OutputStreamWriter(getOutputStream(), charset);
+  /**
+   * @return the url
+   */
+  public File getFile() {
+    return file;
   }
 }

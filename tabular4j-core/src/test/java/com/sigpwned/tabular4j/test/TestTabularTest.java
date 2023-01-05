@@ -22,8 +22,6 @@ package com.sigpwned.tabular4j.test;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -31,6 +29,8 @@ import java.util.List;
 import org.junit.Test;
 import com.sigpwned.tabular4j.SpreadsheetFactory;
 import com.sigpwned.tabular4j.TabularTest;
+import com.sigpwned.tabular4j.io.sink.ByteArrayByteSink;
+import com.sigpwned.tabular4j.io.source.ByteArrayByteSource;
 import com.sigpwned.tabular4j.model.TabularWorkbookReader;
 import com.sigpwned.tabular4j.model.TabularWorkbookWriter;
 import com.sigpwned.tabular4j.model.TabularWorksheetReader;
@@ -48,37 +48,36 @@ public class TestTabularTest extends TabularTest {
 
   @Test
   public void workbookWriteTest() throws IOException {
-    ByteArrayOutputStream drain = new ByteArrayOutputStream();
+    ByteArrayByteSink sink = new ByteArrayByteSink();
 
-    try (TabularWorkbookWriter wb =
-        new SpreadsheetFactory().writeTabularWorkbook(() -> drain, "test")) {
+    try (TabularWorkbookWriter wb = new SpreadsheetFactory().writeTabularWorkbook(sink, "test")) {
       try (TabularWorksheetRowWriter ws = wb.getWorksheet("test").writeHeaders(HEADERS)) {
         for (List<WorksheetCellDefinition> row : WRITE_ROWS)
           ws.writeRow(row);
       }
     }
 
-    assertThat(new String(drain.toByteArray(), StandardCharsets.UTF_8), is(TEXT));
+    assertThat(new String(sink.getBytes(), StandardCharsets.UTF_8), is(TEXT));
   }
 
   @Test
   public void worksheetWriteTest() throws IOException {
-    ByteArrayOutputStream drain = new ByteArrayOutputStream();
+    ByteArrayByteSink sink = new ByteArrayByteSink();
 
-    try (TabularWorksheetRowWriter ws = new SpreadsheetFactory()
-        .writeTabularActiveWorksheet(() -> drain, "test").writeHeaders(HEADERS)) {
+    try (TabularWorksheetRowWriter ws =
+        new SpreadsheetFactory().writeTabularActiveWorksheet(sink, "test").writeHeaders(HEADERS)) {
       for (List<WorksheetCellDefinition> row : WRITE_ROWS)
         ws.writeRow(row);
     }
 
-    assertThat(new String(drain.toByteArray(), StandardCharsets.UTF_8), is(TEXT));
+    assertThat(new String(sink.getBytes(), StandardCharsets.UTF_8), is(TEXT));
   }
 
   @Test
   public void workbookReadTest() throws IOException {
-    ByteArrayInputStream source = new ByteArrayInputStream(TEXT.getBytes(StandardCharsets.UTF_8));
+    ByteArrayByteSource source = new ByteArrayByteSource(TEXT.getBytes(StandardCharsets.UTF_8));
 
-    try (TabularWorkbookReader wb = new SpreadsheetFactory().readTabularWorkbook(() -> source)) {
+    try (TabularWorkbookReader wb = new SpreadsheetFactory().readTabularWorkbook(source)) {
       try (TabularWorksheetReader ws = wb.getWorksheet(0)) {
         assertThat(ws.getColumnNames(), is(HEADERS));
 
@@ -94,10 +93,9 @@ public class TestTabularTest extends TabularTest {
 
   @Test
   public void worksheetReadTest() throws IOException {
-    ByteArrayInputStream source = new ByteArrayInputStream(TEXT.getBytes(StandardCharsets.UTF_8));
+    ByteArrayByteSource source = new ByteArrayByteSource(TEXT.getBytes(StandardCharsets.UTF_8));
 
-    try (TabularWorksheetReader ws =
-        new SpreadsheetFactory().readActiveTabularWorksheet(() -> source)) {
+    try (TabularWorksheetReader ws = new SpreadsheetFactory().readActiveTabularWorksheet(source)) {
       assertThat(ws.getColumnNames(), is(HEADERS));
 
       List<List<String>> rows = new ArrayList<>();

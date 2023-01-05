@@ -78,7 +78,7 @@ public final class Spreadsheets {
     }
   }
 
-  public static void processActiveTabularWorksheet(ByteSource source,
+  public static void processTabularActiveWorksheet(ByteSource source,
       TabularWorksheetConsumer consumer) throws IOException {
     try (TabularWorksheetReader worksheet =
         SpreadsheetFactory.getInstance().readActiveTabularWorksheet(source)) {

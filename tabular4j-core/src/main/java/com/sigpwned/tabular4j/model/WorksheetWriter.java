@@ -19,6 +19,8 @@
  */
 package com.sigpwned.tabular4j.model;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,6 +28,14 @@ public interface WorksheetWriter extends AutoCloseable {
   public int getSheetIndex();
 
   public String getSheetName();
+
+  public default void writeValuesRow(Object... cells) throws IOException {
+    writeValuesRow(asList(cells));
+  }
+
+  public default void writeValuesRow(List<Object> cells) throws IOException {
+    writeRow(cells.stream().map(WorksheetCellDefinition::ofValue).collect(toList()));
+  }
 
   public void writeRow(List<WorksheetCellDefinition> cells) throws IOException;
 

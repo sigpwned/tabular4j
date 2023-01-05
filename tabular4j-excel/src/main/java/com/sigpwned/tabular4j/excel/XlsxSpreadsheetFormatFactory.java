@@ -39,6 +39,8 @@ import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetWriter;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
+import com.sigpwned.tabular4j.io.sink.FileByteSink;
+import com.sigpwned.tabular4j.io.source.FileByteSource;
 import com.sigpwned.tabular4j.model.WorkbookReader;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
 import com.sigpwned.tabular4j.model.WorksheetReader;
@@ -60,6 +62,9 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
 
   @Override
   public WorkbookReader readWorkbook(ByteSource source) throws IOException {
+    if (source instanceof FileByteSource)
+      return readWorkbook(((FileByteSource) source).getFile());
+
     WorkbookReader result = null;
 
     File file = MoreFiles.createTempFile("workbook.", ".xlsx");
@@ -153,7 +158,7 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
 
   @Override
   public WorkbookWriter writeWorkbook(File file) throws IOException {
-    return writeWorkbook(() -> new FileOutputStream(file));
+    return writeWorkbook(new FileByteSink(file));
   }
 
   @Override
@@ -181,7 +186,7 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
 
   @Override
   public WorksheetWriter writeActiveWorksheet(File file) throws IOException {
-    return writeActiveWorksheet(() -> new FileOutputStream(file));
+    return writeActiveWorksheet(new FileByteSink(file));
   }
 
   /**
