@@ -19,10 +19,10 @@
  */
 package com.sigpwned.tabular4j.excel;
 
-import com.sigpwned.tabular4j.ConsumerTest;
+import com.sigpwned.tabular4j.TabularTest;
 
-public class XlsxConsumerTest extends ConsumerTest {
-  public XlsxConsumerTest() {
+public class XlsxTabularTest extends TabularTest {
+  public XlsxTabularTest() {
     super(XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION);
   }
 }

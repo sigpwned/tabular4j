@@ -19,7 +19,7 @@
  */
 package com.sigpwned.tabular4j.excel;
 
-import com.sigpwned.tabular4j.consumer.ConsumerTest;
+import com.sigpwned.tabular4j.ConsumerTest;
 
 public class XlsConsumerTest extends ConsumerTest {
   public XlsConsumerTest() {

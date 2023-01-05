@@ -93,12 +93,17 @@ public class TestSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   private static final byte[] XLS_MAGIC_BYTES = new byte[] {(byte) 0xD0, (byte) 0xCF, (byte) 0x11,
       (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, (byte) 0x1A, (byte) 0xE1};
 
+  /**
+   * Our CSVs always start with a double quote.
+   */
+  private static final byte[] CSV_MAGIC_BYTES = new byte[] {'"'};
+
   private static List<List<String>> lines(ByteSource source) throws IOException {
     byte[] buf;
     try (InputStream in = source.getInputStream()) {
       buf = in.readAllBytes();
     }
-    for (byte[] blacklist : new byte[][] {XLS_MAGIC_BYTES, XLSX_MAGIC_BYTES}) {
+    for (byte[] blacklist : new byte[][] {XLS_MAGIC_BYTES, XLSX_MAGIC_BYTES, CSV_MAGIC_BYTES}) {
       if (Arrays.compare(buf, 0, blacklist.length, blacklist, 0, blacklist.length) == 0)
         throw new InvalidFileSpreadsheetException();
     }

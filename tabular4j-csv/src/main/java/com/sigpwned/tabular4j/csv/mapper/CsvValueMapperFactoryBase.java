@@ -61,7 +61,7 @@ import com.sigpwned.tabular4j.type.QualifiedType;
   @Override
   public Optional<CsvValueMapper> buildValueMapper(QualifiedType<?> type,
       CsvConfigRegistry registry) {
-    if (!type.getQualifiers().isEmpty())
+    if (type == null || !type.getQualifiers().isEmpty())
       return Optional.empty();
     return Optional.ofNullable(mappers.get(type.getType()));
   }

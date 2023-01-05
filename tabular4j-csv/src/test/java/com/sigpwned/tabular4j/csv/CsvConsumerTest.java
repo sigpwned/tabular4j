@@ -19,7 +19,7 @@
  */
 package com.sigpwned.tabular4j.csv;
 
-import com.sigpwned.tabular4j.consumer.ConsumerTest;
+import com.sigpwned.tabular4j.ConsumerTest;
 
 public class CsvConsumerTest extends ConsumerTest {
   public CsvConsumerTest() {

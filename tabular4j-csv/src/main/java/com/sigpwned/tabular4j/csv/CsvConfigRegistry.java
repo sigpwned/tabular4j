@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.sigpwned.csv4j.CsvField;
 import com.sigpwned.tabular4j.csv.mapper.BoxedCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.CoreCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.InternetCsvValueMapperFactory;
@@ -34,6 +35,7 @@ import com.sigpwned.tabular4j.type.QualifiedType;
 
 public class CsvConfigRegistry {
   private final List<CsvValueMapperFactory> valueMapperFactories;
+  private final CsvValueMapperFactory nullValueMapperFactory;
 
   public CsvConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
@@ -42,6 +44,26 @@ public class CsvConfigRegistry {
     addValueMapperLast(BoxedCsvValueMapperFactory.INSTANCE);
     addValueMapperLast(JavaTimeCsvValueMapperFactory.INSTANCE);
     addValueMapperLast(InternetCsvValueMapperFactory.INSTANCE);
+    this.nullValueMapperFactory = new CsvValueMapperFactory() {
+      @Override
+      public Optional<CsvValueMapper> buildValueMapper(QualifiedType<?> type,
+          CsvConfigRegistry registry) {
+        return type != null ? Optional.empty() : Optional.of(new CsvValueMapper() {
+          @Override
+          public void setValue(CsvField cell, Object value) {
+            if (value != null)
+              throw new IllegalArgumentException("value must be null");
+            cell.setQuoted(false);
+            cell.setText("");
+          }
+
+          @Override
+          public Object getValue(CsvField cell) {
+            return null;
+          }
+        });
+      }
+    };
   }
 
   public void addValueMapperFirst(CsvValueMapperFactory valueMapperFactory) {
@@ -65,8 +87,17 @@ public class CsvConfigRegistry {
   }
 
   public Optional<CsvValueMapper> findValueMapperForType(QualifiedType<?> type) {
+    if (type == null)
+      return getNullValueMapperFactory().buildValueMapper((QualifiedType<?>) null, this);
     return getValueMapperFactories().stream()
         .flatMap(f -> f.buildValueMapper(type, CsvConfigRegistry.this).stream()).findFirst();
+  }
+
+  /**
+   * @return the nullValueMapperFactory
+   */
+  public CsvValueMapperFactory getNullValueMapperFactory() {
+    return nullValueMapperFactory;
   }
 
   /**

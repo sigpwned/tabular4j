@@ -53,18 +53,20 @@ public class WorksheetCellValue {
   }
 
   public WorksheetCellValue(Class<?> klass, Object value) {
-    this(QualifiedType.of(klass), value);
+    this(klass != null ? QualifiedType.of(klass) : null, value);
   }
 
   public WorksheetCellValue(Type type, Object value) {
-    this(QualifiedType.of(type), value);
+    this(type != null ? QualifiedType.of(type) : null, value);
   }
 
   public WorksheetCellValue(GenericType<?> genericType, Object value) {
-    this(QualifiedType.of(genericType), value);
+    this(genericType != null ? QualifiedType.of(genericType) : null, value);
   }
 
   public WorksheetCellValue(QualifiedType<?> type, Object value) {
+    if (value != null && type == null)
+      throw new IllegalArgumentException("if value is not null, then type must not be null");
     this.type = type;
     this.value = value;
   }

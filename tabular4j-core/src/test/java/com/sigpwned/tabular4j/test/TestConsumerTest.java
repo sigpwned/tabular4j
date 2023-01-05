@@ -19,7 +19,7 @@
  */
 package com.sigpwned.tabular4j.test;
 
-import com.sigpwned.tabular4j.consumer.ConsumerTest;
+import com.sigpwned.tabular4j.ConsumerTest;
 
 public class TestConsumerTest extends ConsumerTest {
   public TestConsumerTest() {

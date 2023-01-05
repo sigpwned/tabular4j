@@ -20,6 +20,7 @@
 package com.sigpwned.tabular4j.type;
 
 import static java.util.Collections.emptySet;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -79,7 +80,7 @@ public final class QualifiedType<T> {
   }
 
   private QualifiedType(Type type, Set<Annotation> qualifiers) {
-    this.type = type;
+    this.type = requireNonNull(type);
     this.qualifiers = qualifiers;
   }
 

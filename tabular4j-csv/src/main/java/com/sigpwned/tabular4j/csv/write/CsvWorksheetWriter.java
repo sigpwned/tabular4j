@@ -67,7 +67,9 @@ public class CsvWorksheetWriter implements WorksheetWriter {
       CsvField field = new CsvField();
       if (cell != null && cell.getValue() != null) {
         getConfig().findValueMapperForType(cell.getValue().getType())
-            .orElseThrow(() -> new IllegalStateException("no mapper for type"))
+            .orElseThrow(() -> {
+              throw new IllegalStateException("no mapper for type");
+            })
             .setValue(field, cell.getValue().getValue());
       } else {
         field = field.withQuoted(false).withText("");

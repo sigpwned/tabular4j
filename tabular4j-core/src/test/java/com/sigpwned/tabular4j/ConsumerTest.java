@@ -17,7 +17,7 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.consumer;
+package com.sigpwned.tabular4j;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.Test;
 import com.google.common.io.Resources;
+import com.sigpwned.tabular4j.consumer.TabularWorkbookConsumer;
+import com.sigpwned.tabular4j.consumer.TabularWorksheetConsumer;
+import com.sigpwned.tabular4j.consumer.WorkbookConsumer;
+import com.sigpwned.tabular4j.consumer.WorksheetConsumer;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.model.TabularWorksheetCell;
 import com.sigpwned.tabular4j.model.WorksheetCell;

@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * tabular4j-excel
+ * tabular4j-csv
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,12 +17,12 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.excel;
+package com.sigpwned.tabular4j.csv;
 
-import com.sigpwned.tabular4j.ConsumerTest;
+import com.sigpwned.tabular4j.TabularTest;
 
-public class XlsxConsumerTest extends ConsumerTest {
-  public XlsxConsumerTest() {
-    super(XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION);
+public class CsvTabularTest extends TabularTest {
+  public CsvTabularTest() {
+    super(CsvSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION);
   }
 }

@@ -55,7 +55,7 @@ import com.sigpwned.tabular4j.type.QualifiedType;
   @Override
   public Optional<ExcelValueMapper> buildValueMapper(QualifiedType<?> type,
       ExcelConfigRegistry registry) {
-    if (!type.getQualifiers().isEmpty())
+    if (type==null || !type.getQualifiers().isEmpty())
       return Optional.empty();
     return Optional.ofNullable(mappers.get(type.getType()));
   }

@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.poi.ss.usermodel.Cell;
 import com.sigpwned.tabular4j.excel.mapper.BoxedExcelValueMapperFactory;
 import com.sigpwned.tabular4j.excel.mapper.CoreExcelValueMapperFactory;
 import com.sigpwned.tabular4j.excel.mapper.InternetExcelValueMapperFactory;
@@ -34,6 +35,7 @@ import com.sigpwned.tabular4j.type.QualifiedType;
 
 public class ExcelConfigRegistry {
   private final List<ExcelValueMapperFactory> valueMapperFactories;
+  private final ExcelValueMapperFactory nullValueMapperFactory;
 
   public ExcelConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
@@ -42,6 +44,26 @@ public class ExcelConfigRegistry {
     addValueMapperLast(BoxedExcelValueMapperFactory.INSTANCE);
     addValueMapperLast(JavaTimeExcelValueMapperFactory.INSTANCE);
     addValueMapperLast(InternetExcelValueMapperFactory.INSTANCE);
+    this.nullValueMapperFactory = new ExcelValueMapperFactory() {
+      @Override
+      public Optional<ExcelValueMapper> buildValueMapper(QualifiedType<?> type,
+          ExcelConfigRegistry registry) {
+        return type != null ? Optional.empty() : Optional.of(new ExcelValueMapper() {
+          @Override
+          public void setValue(Cell cell, Object value) {
+            if (value != null)
+              throw new IllegalArgumentException("value must be null");
+            cell.setBlank();
+          }
+
+          @Override
+          public Object getValue(Cell cell) {
+            return null;
+          }
+        });
+
+      }
+    };
   }
 
   public void addValueMapperFirst(ExcelValueMapperFactory valueMapperFactory) {
@@ -65,8 +87,17 @@ public class ExcelConfigRegistry {
   }
 
   public Optional<ExcelValueMapper> findValueMapperForType(QualifiedType<?> type) {
+    if (type == null)
+      return getNullValueMapperFactory().buildValueMapper((QualifiedType<?>) null, this);
     return getValueMapperFactories().stream()
         .flatMap(f -> f.buildValueMapper(type, ExcelConfigRegistry.this).stream()).findFirst();
+  }
+
+  /**
+   * @return the nullValueMapperFactory
+   */
+  public ExcelValueMapperFactory getNullValueMapperFactory() {
+    return nullValueMapperFactory;
   }
 
   /**

@@ -19,9 +19,7 @@
  */
 package com.sigpwned.tabular4j.test;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.ByteArrayInputStream;
@@ -32,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import com.sigpwned.tabular4j.SpreadsheetFactory;
+import com.sigpwned.tabular4j.TabularTest;
 import com.sigpwned.tabular4j.model.TabularWorkbookReader;
 import com.sigpwned.tabular4j.model.TabularWorkbookWriter;
 import com.sigpwned.tabular4j.model.TabularWorksheetReader;
@@ -39,17 +38,10 @@ import com.sigpwned.tabular4j.model.TabularWorksheetRow;
 import com.sigpwned.tabular4j.model.TabularWorksheetRowWriter;
 import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
 
-public class TabularTest {
-  public static final List<String> HEADERS = List.of("alpha", "bravo");
-
-  public static final List<List<String>> READ_ROWS =
-      List.of(List.of("hello", "world"), List.of("a", "b"), asList("1", null));
-
-  public static final List<List<WorksheetCellDefinition>> WRITE_ROWS =
-      List.of(List.of("hello", "world"), List.of("a", "b", "c"), List.of("1")).stream()
-          .map(
-              xs -> xs.stream().map(WorksheetCellDefinition::ofValue).collect(toUnmodifiableList()))
-          .collect(toUnmodifiableList());
+public class TestTabularTest extends TabularTest {
+  public TestTabularTest() {
+    super("test");
+  }
 
   // TODO Convert to a text block if and when we change our Java target
   public static final String TEXT = "alpha,bravo\n" + "hello,world\n" + "a,b\n" + "1,\n";

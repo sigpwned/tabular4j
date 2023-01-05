@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * tabular4j-excel
+ * tabular4j-core
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,12 +17,18 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.excel;
+package com.sigpwned.tabular4j.model;
 
-import com.sigpwned.tabular4j.ConsumerTest;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Test;
+import com.sigpwned.tabular4j.type.QualifiedType;
 
-public class XlsxConsumerTest extends ConsumerTest {
-  public XlsxConsumerTest() {
-    super(XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION);
+public class WorksheetCellValueTest {
+  @Test
+  public void test() {
+    assertThat(WorksheetCellValue.of("hello"), is(WorksheetCellValue.of(String.class, "hello")));
+    assertThat(WorksheetCellValue.of(String.class, "hello"),
+        is(WorksheetCellValue.of(QualifiedType.of(String.class), "hello")));
   }
 }
