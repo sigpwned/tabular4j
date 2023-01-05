@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-excel
+ * tabular4j-core
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,22 +17,12 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.excel;
+package com.sigpwned.tabular4j.test;
 
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import com.sigpwned.tabular4j.SpreadsheetFactory;
-import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
+import com.sigpwned.tabular4j.consumer.ConsumerTest;
 
-public class ServiceLoadingTest {
-  @Test
-  public void smokeTest() {
-    assertThat(
-        new SpreadsheetFactory().getFormats().stream()
-            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().collect(toList()),
-        hasItems(XlsSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION,
-            XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION));
+public class TestConsumerTest extends ConsumerTest {
+  public TestConsumerTest() {
+    super("test");
   }
 }

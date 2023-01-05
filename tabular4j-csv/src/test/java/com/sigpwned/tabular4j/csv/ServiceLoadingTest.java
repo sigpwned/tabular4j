@@ -20,9 +20,8 @@
 package com.sigpwned.tabular4j.csv;
 
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
-import java.util.List;
 import org.junit.Test;
 import com.sigpwned.tabular4j.SpreadsheetFactory;
 import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
@@ -33,6 +32,6 @@ public class ServiceLoadingTest {
     assertThat(
         new SpreadsheetFactory().getFormats().stream()
             .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().collect(toList()),
-        is(List.of(CsvSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION)));
+        hasItem(CsvSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION));
   }
 }

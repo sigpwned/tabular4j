@@ -1,6 +1,6 @@
 /*-
  * =================================LICENSE_START==================================
- * spreadsheet4j-excel
+ * tabular4j-core
  * ====================================SECTION=====================================
  * Copyright (C) 2022 - 2023 Andy Boothe
  * ====================================SECTION=====================================
@@ -17,22 +17,41 @@
  * limitations under the License.
  * ==================================LICENSE_END===================================
  */
-package com.sigpwned.tabular4j.excel;
+package com.sigpwned.tabular4j.test;
 
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
-import com.sigpwned.tabular4j.SpreadsheetFactory;
-import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
+import static java.util.Collections.unmodifiableList;
+import java.io.IOException;
+import java.util.List;
+import com.sigpwned.tabular4j.model.WorkbookReader;
+import com.sigpwned.tabular4j.model.WorksheetReader;
 
-public class ServiceLoadingTest {
-  @Test
-  public void smokeTest() {
-    assertThat(
-        new SpreadsheetFactory().getFormats().stream()
-            .map(SpreadsheetFormatFactory::getDefaultFileExtension).sorted().collect(toList()),
-        hasItems(XlsSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION,
-            XlsxSpreadsheetFormatFactory.DEFAULT_FILE_EXTENSION));
+public class TestWorkbookReader implements WorkbookReader {
+  private final List<List<String>> records;
+
+  public TestWorkbookReader(List<List<String>> records) {
+    this.records = unmodifiableList(records);
   }
+
+  @Override
+  public int getWorksheetCount() {
+    return 1;
+  }
+
+  @Override
+  public List<String> getWorksheetNames() {
+    return List.of("test");
+  }
+
+  @Override
+  public int getActiveWorksheetIndex() {
+    return 0;
+  }
+
+  @Override
+  public WorksheetReader getWorksheet(int index) throws IOException {
+    return new TestWorksheetReader(records.listIterator());
+  }
+
+  @Override
+  public void close() throws IOException {}
 }
