@@ -43,6 +43,7 @@ import com.sigpwned.tabular4j.model.WorkbookReader;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
 import com.sigpwned.tabular4j.model.WorksheetReader;
 import com.sigpwned.tabular4j.model.WorksheetWriter;
+import com.sigpwned.tabular4j.util.MoreFiles;
 
 public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactory {
   public static final String DEFAULT_FILE_EXTENSION = "xlsx";
@@ -61,7 +62,7 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
   public WorkbookReader readWorkbook(ByteSource source) throws IOException {
     WorkbookReader result = null;
 
-    File file = File.createTempFile("workbook.", ".xlsx");
+    File file = MoreFiles.createTempFile("workbook.", ".xlsx");
     try {
       try (OutputStream out = new FileOutputStream(file)) {
         try (InputStream in = source.getInputStream()) {
