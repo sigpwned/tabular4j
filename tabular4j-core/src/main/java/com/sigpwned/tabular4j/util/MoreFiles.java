@@ -27,9 +27,12 @@ public final class MoreFiles {
           .toFile();
     } else {
       result = Files.createTempFile(prefix, suffix).toFile();
-      result.setReadable(true, true);
-      result.setWritable(true, true);
-      result.setExecutable(false);
+      if (!result.setReadable(true, true))
+        throw new IOException("Failed to set temporary file read permissions");
+      if (!result.setWritable(true, true))
+        throw new IOException("Failed to set temporary file write permissions");
+      if (!result.setExecutable(false))
+        throw new IOException("Failed to set temporary file execution permissions");
     }
     return result;
   }
