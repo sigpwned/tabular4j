@@ -31,10 +31,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.sigpwned.chardet4j.Chardet;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.io.CharSource;
 
-public class MoreChardet {
+public final class MoreChardet {
+  private MoreChardet() {}
+
   private static final int TEXT_BUF_LEN = 16384;
 
   public static CharSource decode(ByteSource source) {
@@ -59,7 +62,7 @@ public class MoreChardet {
             charset = Charset.forName(result.getEncoding());
 
             if (!isTextHeuristic(buf, charset))
-              throw new IOException("not text");
+              throw new InvalidFileSpreadsheetException();
           }
         } finally {
           if (result == null)
@@ -75,13 +78,13 @@ public class MoreChardet {
    * @see <a href=
    *      "https://en.wikipedia.org/wiki/List_of_file_signatures">https://en.wikipedia.org/wiki/List_of_file_signatures</a>
    */
-  public static final byte[] XLSX_MAGIC_BYTES = new byte[] {(byte) 0x50, (byte) 0x4B};
+  private static final byte[] XLSX_MAGIC_BYTES = new byte[] {(byte) 0x50, (byte) 0x4B};
 
   /**
    * @see <a href=
    *      "https://en.wikipedia.org/wiki/List_of_file_signatures">https://en.wikipedia.org/wiki/List_of_file_signatures</a>
    */
-  public static final byte[] XLS_MAGIC_BYTES = new byte[] {(byte) 0xD0, (byte) 0xCF, (byte) 0x11,
+  private static final byte[] XLS_MAGIC_BYTES = new byte[] {(byte) 0xD0, (byte) 0xCF, (byte) 0x11,
       (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, (byte) 0x1A, (byte) 0xE1};
 
   /**

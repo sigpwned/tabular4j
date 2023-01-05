@@ -36,6 +36,7 @@ public class ForwardingWorkbookWriter implements WorkbookWriter {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorkbookWriter#getWorksheet(java.lang.String)
    */
+  @Override
   public WorksheetWriter getWorksheet(String name) throws IOException {
     return getDelegate().getWorksheet(name);
   }
@@ -44,6 +45,7 @@ public class ForwardingWorkbookWriter implements WorkbookWriter {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorkbookWriter#close()
    */
+  @Override
   public void close() throws IOException {
     getDelegate().close();
   }

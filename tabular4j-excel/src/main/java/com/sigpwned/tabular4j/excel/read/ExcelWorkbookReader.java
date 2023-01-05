@@ -69,10 +69,10 @@ public class ExcelWorkbookReader implements WorkbookReader {
 
   @Override
   public int getActiveWorksheetIndex() {
-    List<Sheet> visibleSheets = getVisibleSheets();
-    int activeSheetIndex = getWorkbook().getActiveSheetIndex();
-    return IntStream.range(0, visibleSheets.size())
-        .filter(i -> getWorkbook().getSheetIndex(visibleSheets.get(i)) == activeSheetIndex)
+    List<Sheet> vss = getVisibleSheets();
+    int asi = getWorkbook().getActiveSheetIndex();
+    return IntStream.range(0, vss.size())
+        .filter(i -> getWorkbook().getSheetIndex(vss.get(i)) == asi)
         .findFirst().orElse(0);
   }
 

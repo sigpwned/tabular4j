@@ -31,11 +31,11 @@ public interface WorksheetCell {
   }
 
   public default <T> T getValue(Class<T> klass) {
-    return (T) getValue(QualifiedType.of(klass));
+    return getValue(QualifiedType.of(klass));
   }
 
   public default <T> T getValue(GenericType<T> genericType) {
-    return (T) getValue(QualifiedType.of(genericType));
+    return getValue(QualifiedType.of(genericType));
   }
 
   public <T> T getValue(QualifiedType<T> qualifiedType);

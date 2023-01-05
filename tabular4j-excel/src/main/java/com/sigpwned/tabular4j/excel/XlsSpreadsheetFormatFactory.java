@@ -32,6 +32,7 @@ import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import com.sigpwned.tabular4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.tabular4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.tabular4j.excel.write.ExcelWorksheetWriter;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookWriter;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
@@ -94,7 +95,7 @@ public class XlsSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactor
     try {
       workbook = new HSSFWorkbook(new FileInputStream(file));
     } catch (OfficeXmlFileException e) {
-      throw new IOException("Failed to open workbook", e);
+      throw new InvalidFileSpreadsheetException();
     }
     return new ExcelWorkbookReader(getConfig(), workbook);
   }
@@ -167,8 +168,11 @@ public class XlsSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactor
             workbook.write(out);
           }
         } finally {
-          super.close();
-          workbook.close();
+          try {
+            super.close();
+          } finally {
+            workbook.close();
+          }
         }
       }
     };

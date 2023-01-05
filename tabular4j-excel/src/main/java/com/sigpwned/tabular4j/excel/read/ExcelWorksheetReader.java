@@ -65,10 +65,9 @@ public class ExcelWorksheetReader implements WorksheetReader {
     if (rowIndex > getWorksheet().getLastRowNum())
       return null;
 
-    if (rowIndex == FIRST_ROW_INDEX) {
-      if (getWorksheet().getNumMergedRegions() != 0)
-        throw new IOException(
-            format("Cannot read sheet %s because it contains merged regions", getSheetName()));
+    if (rowIndex == FIRST_ROW_INDEX && getWorksheet().getNumMergedRegions() != 0) {
+      throw new IOException(
+          format("Cannot read sheet %s because it contains merged regions", getSheetName()));
     }
 
     WorksheetRow result = null;
@@ -87,10 +86,10 @@ public class ExcelWorksheetReader implements WorksheetReader {
         } else {
           List<ExcelWorksheetCell> cells = new ArrayList<>();
           for (int i = 0; i < row.getFirstCellNum(); i++)
-            if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden))
+            if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden).booleanValue())
               cells.add(new ExcelWorksheetCell(getConfig(), i, null));
           for (int i = row.getFirstCellNum(); i < row.getLastCellNum(); i++)
-            if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden))
+            if (!hidden.computeIfAbsent(i, getWorksheet()::isColumnHidden).booleanValue())
               cells.add(new ExcelWorksheetCell(getConfig(), i, row.getCell(i)));
           result = new ExcelWorksheetRow(rowIndex, cells);
         }

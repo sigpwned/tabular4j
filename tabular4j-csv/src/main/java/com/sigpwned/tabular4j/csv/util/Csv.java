@@ -26,7 +26,7 @@ public final class Csv {
 
   public static final String WORKSHEET_NAME = "csv";
 
-  public static final CsvFormat CSV = CsvFormat.of('"', '"', ',');
+  public static final CsvFormat STANDARD_FILE_FORMAT = CsvFormat.of('"', '"', ',');
 
-  public static final CsvFormat TSV = CsvFormat.of('"', '"', '\t');
+  public static final CsvFormat TSV_FILE_FORMAT = CsvFormat.of('"', '"', '\t');
 }

@@ -37,6 +37,7 @@ public class ForwardingWorkbookReader implements WorkbookReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorkbookReader#getWorksheetCount()
    */
+  @Override
   public int getWorksheetCount() {
     return getDelegate().getWorksheetCount();
   }
@@ -46,6 +47,7 @@ public class ForwardingWorkbookReader implements WorkbookReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorkbookReader#getWorksheetNames()
    */
+  @Override
   public List<String> getWorksheetNames() {
     return getDelegate().getWorksheetNames();
   }
@@ -57,6 +59,7 @@ public class ForwardingWorkbookReader implements WorkbookReader {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorkbookReader#getWorksheet(int)
    */
+  @Override
   public WorksheetReader getWorksheet(int index) throws IOException {
     return getDelegate().getWorksheet(index);
   }
@@ -68,6 +71,7 @@ public class ForwardingWorkbookReader implements WorkbookReader {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorkbookReader#findWorksheetByName(java.lang.String)
    */
+  @Override
   public Optional<WorksheetReader> findWorksheetByName(String name) throws IOException {
     return getDelegate().findWorksheetByName(name);
   }
@@ -76,6 +80,7 @@ public class ForwardingWorkbookReader implements WorkbookReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorkbookReader#getActiveWorksheetIndex()
    */
+  @Override
   public int getActiveWorksheetIndex() {
     return getDelegate().getActiveWorksheetIndex();
   }

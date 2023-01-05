@@ -43,7 +43,7 @@ public class JavaTimeExcelValueMapperFactory extends ExcelValueMapperFactoryBase
         c -> c.getLocalDateTimeCellValue().toLocalDate());
     addValueMapper(LocalTime.class, (c, x) -> c.setCellValue(x.toString()),
         c -> LocalTime.parse(c.getStringCellValue()));
-    addValueMapper(LocalDateTime.class, Cell::setCellValue, c -> c.getLocalDateTimeCellValue());
+    addValueMapper(LocalDateTime.class, Cell::setCellValue, Cell::getLocalDateTimeCellValue);
     addValueMapper(OffsetDateTime.class,
         (c, x) -> c.setCellValue(x.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime()),
         c -> c.getLocalDateTimeCellValue().atOffset(ZoneOffset.UTC));

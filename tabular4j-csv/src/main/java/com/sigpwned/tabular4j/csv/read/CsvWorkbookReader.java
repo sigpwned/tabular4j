@@ -34,11 +34,11 @@ public class CsvWorkbookReader implements WorkbookReader {
   private final CsvConfigRegistry config;
   private final CharSource source;
 
-  public CsvWorkbookReader(CsvConfigRegistry config, ByteSource source) throws IOException {
+  public CsvWorkbookReader(CsvConfigRegistry config, ByteSource source) {
     this(config, MoreChardet.decode(source));
   }
 
-  public CsvWorkbookReader(CsvConfigRegistry config, CharSource source) throws IOException {
+  public CsvWorkbookReader(CsvConfigRegistry config, CharSource source) {
     this.config = config;
     this.source = source;
   }

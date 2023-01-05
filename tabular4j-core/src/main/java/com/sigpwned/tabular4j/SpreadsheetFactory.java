@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.ServiceLoader;
 import java.util.stream.IntStream;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
+import com.sigpwned.tabular4j.exception.UnrecognizedFormatSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.model.TabularWorkbookReader;
@@ -85,13 +87,12 @@ public class SpreadsheetFactory {
     for (SpreadsheetFormatFactory format : getFormats()) {
       try {
         result = format.readWorkbook(source);
-      } catch (IOException e) {
-        // TODO Should we only catch a specific format mismatch exception here?
+      } catch (InvalidFileSpreadsheetException e) {
         // This is OK. It's just not in the given format.
       }
     }
     if (result == null)
-      throw new IOException("Unrecognized file format");
+      throw new InvalidFileSpreadsheetException();
     return result;
   }
 
@@ -106,19 +107,25 @@ public class SpreadsheetFactory {
       }
     }
     if (result == null)
-      throw new IOException("Unrecognized file format");
+      throw new InvalidFileSpreadsheetException();
     return result;
   }
 
   public WorkbookWriter writeWorkbook(ByteSink sink, String fileExtension) throws IOException {
+    if (fileExtension == null)
+      throw new NullPointerException();
     return this.findFormatByDefaultFileExtension(fileExtension)
-        .orElseThrow(() -> new IOException("Unrecognized file format")).writeWorkbook(sink);
+        .orElseThrow(() -> new UnrecognizedFormatSpreadsheetException(fileExtension))
+        .writeWorkbook(sink);
   }
 
   public WorksheetWriter writeActiveWorksheet(ByteSink sink, String fileExtension)
       throws IOException {
+    if (fileExtension == null)
+      throw new NullPointerException();
     return this.findFormatByDefaultFileExtension(fileExtension)
-        .orElseThrow(() -> new IOException("Unrecognized file format")).writeActiveWorksheet(sink);
+        .orElseThrow(() -> new UnrecognizedFormatSpreadsheetException(fileExtension))
+        .writeActiveWorksheet(sink);
   }
 
   public TabularWorkbookReader readTabularWorkbook(ByteSource source) throws IOException {

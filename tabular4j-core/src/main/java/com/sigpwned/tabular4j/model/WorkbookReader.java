@@ -45,7 +45,7 @@ public interface WorkbookReader extends AutoCloseable {
             }
           }).findFirst();
     } catch (UncheckedIOException e) {
-      throw (IOException) e.getCause();
+      throw e.getCause();
     }
   }
 

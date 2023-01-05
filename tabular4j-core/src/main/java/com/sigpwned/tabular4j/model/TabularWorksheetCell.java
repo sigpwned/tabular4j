@@ -37,6 +37,7 @@ public class TabularWorksheetCell implements WorksheetCell {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetCell#getColumnIndex()
    */
+  @Override
   public int getColumnIndex() {
     return delegate.getColumnIndex();
   }
@@ -46,6 +47,7 @@ public class TabularWorksheetCell implements WorksheetCell {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetCell#getValue(java.lang.reflect.Type)
    */
+  @Override
   public Object getValue(Type type) {
     return delegate.getValue(type);
   }
@@ -56,6 +58,7 @@ public class TabularWorksheetCell implements WorksheetCell {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetCell#getValue(java.lang.Class)
    */
+  @Override
   public <T> T getValue(Class<T> klass) {
     return delegate.getValue(klass);
   }
@@ -66,6 +69,7 @@ public class TabularWorksheetCell implements WorksheetCell {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetCell#getValue(com.sigpwned.tabular4j.type.GenericType)
    */
+  @Override
   public <T> T getValue(GenericType<T> genericType) {
     return delegate.getValue(genericType);
   }
@@ -76,6 +80,7 @@ public class TabularWorksheetCell implements WorksheetCell {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetCell#getValue(com.sigpwned.tabular4j.type.QualifiedType)
    */
+  @Override
   public <T> T getValue(QualifiedType<T> qualifiedType) {
     return delegate.getValue(qualifiedType);
   }

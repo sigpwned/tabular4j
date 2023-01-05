@@ -36,6 +36,7 @@ public class ForwardingWorksheetWriter implements WorksheetWriter {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetWriter#getSheetIndex()
    */
+  @Override
   public int getSheetIndex() {
     return getDelegate().getSheetIndex();
   }
@@ -44,6 +45,7 @@ public class ForwardingWorksheetWriter implements WorksheetWriter {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetWriter#getSheetName()
    */
+  @Override
   public String getSheetName() {
     return getDelegate().getSheetName();
   }
@@ -53,6 +55,7 @@ public class ForwardingWorksheetWriter implements WorksheetWriter {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorksheetWriter#writeRow(java.util.List)
    */
+  @Override
   public void writeRow(List<WorksheetCellDefinition> cells) throws IOException {
     getDelegate().writeRow(cells);
   }
@@ -61,6 +64,7 @@ public class ForwardingWorksheetWriter implements WorksheetWriter {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorksheetWriter#close()
    */
+  @Override
   public void close() throws IOException {
     getDelegate().close();
   }

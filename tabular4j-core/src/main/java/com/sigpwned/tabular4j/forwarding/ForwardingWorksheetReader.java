@@ -37,6 +37,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetReader#getSheetIndex()
    */
+  @Override
   public int getSheetIndex() {
     return getDelegate().getSheetIndex();
   }
@@ -45,6 +46,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetReader#getSheetName()
    */
+  @Override
   public String getSheetName() {
     return getDelegate().getSheetName();
   }
@@ -53,6 +55,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetReader#isActive()
    */
+  @Override
   public boolean isActive() {
     return getDelegate().isActive();
   }
@@ -62,6 +65,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorksheetReader#readRow()
    */
+  @Override
   public WorksheetRow readRow() throws IOException {
     return getDelegate().readRow();
   }
@@ -70,6 +74,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetReader#iterator()
    */
+  @Override
   public Iterator<WorksheetRow> iterator() {
     return getDelegate().iterator();
   }
@@ -78,6 +83,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @return
    * @see com.sigpwned.tabular4j.model.WorksheetReader#stream()
    */
+  @Override
   public Stream<WorksheetRow> stream() {
     return getDelegate().stream();
   }
@@ -86,6 +92,7 @@ public class ForwardingWorksheetReader implements WorksheetReader {
    * @throws IOException
    * @see com.sigpwned.tabular4j.model.WorksheetReader#close()
    */
+  @Override
   public void close() throws IOException {
     getDelegate().close();
   }

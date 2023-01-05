@@ -63,8 +63,7 @@ public class RectangularWorksheetReader implements WorksheetReader {
     if (row == null) {
       result = null;
     } else if (width == NO_WIDTH) {
-      if (row != null)
-        width = row.getCells().size();
+      width = row.getCells().size();
       result = row;
     } else if (row.getCells().size() > width) {
       final List<WorksheetCell> cells = unmodifiableList(row.getCells().subList(0, width));
