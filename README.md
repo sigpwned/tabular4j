@@ -47,7 +47,7 @@ A workbook is an ordered list of spreadsheets gathered into a single file. Each 
 
 Users open an existing workbook file to read using a `ByteSource`. Note that the spreadsheet format (e.g., CSV, XLSX, etc.) is never given explicitly; rather, the framework detects the format of the spreadsheet and reacts accordingly.
 
-    try (WorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(ByteSource.ofFile(file))) {
+    try (TabularWorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(ByteSource.ofFile(file))) {
         // Handle workbook here...
     }
 
@@ -59,7 +59,7 @@ This approach opens a workbook file and processes its active worksheet only.
 
 First, the user can open it and then iterate over its rows manually:
 
-    try (WorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
+    try (TabularWorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
         for(TabularWorksheetRow row=worksheet.readRow();row!=null;row=worksheet.readRow()) {
             // Handle row here...
         }
@@ -69,7 +69,7 @@ First, the user can open it and then iterate over its rows manually:
 
 Alternatively, the user can use an `Iterator` directly. Note that any `IOException` exceptions are thrown as `UncheckedIOException` in this case.
 
-    try (WorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
+    try (TabularWorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
         for(TabularWorksheetRow row : worksheet) {
             // Handle row here...
         }
@@ -79,7 +79,7 @@ Alternatively, the user can use an `Iterator` directly. Note that any `IOExcepti
 
 The user an also use a Java 8 `Stream` to process rows:
 
-    try (WorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
+    try (TabularWorksheetReader worksheet=SpreadsheetFactory.getInstance().readTabularActiveWorksheet(source)) {
         worksheet.stream().forEach(c -> {
             // Handle row here...
         });
@@ -111,9 +111,9 @@ This approach opens a workbook file and processes each of its worksheets in orde
 
 First, the user can open the file and iterate over its sheets by index:
 
-    try (WorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(source)) {
+    try (TabularWorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(source)) {
         for(int i=0;i<workbook.getWorksheetCount();i++) {
-            try (WorksheetReader worksheet=workbook.getWorksheet(i)) {
+            try (TabularWorksheetReader worksheet=workbook.getWorksheet(i)) {
                 // Handle worksheet here...
             }
         }
@@ -123,9 +123,9 @@ First, the user can open the file and iterate over its sheets by index:
 
 Alternatively, the user can open the file and iterate over its sheets by name:
 
-    try (WorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(source)) {
+    try (TabularWorkbookReader workbook=SpreadsheetFactory.getInstance().readTabularWorkbook(source)) {
         for(String worksheetName : workbook.getWorksheetNames()) {
-            try (WorksheetReader worksheet=workbook.findWorksheetByName(worksheetName).get()) {
+            try (TabularWorksheetReader worksheet=workbook.findWorksheetByName(worksheetName).get()) {
                 // Handle worksheet here...
             }
         }
@@ -135,7 +135,7 @@ Alternatively, the user can open the file and iterate over its sheets by name:
 
 Users open a workbook file to write using a `ByteSink`. The user gives the desired file format in this case.
 
-    try (WorkbookWriter workbook=SpreadsheetFactory.getInstance().writeTabularWorkbook(ByteSink.ofFile(file))) {
+    try (TabularWorkbookWriter workbook=SpreadsheetFactory.getInstance().writeTabularWorkbook(ByteSink.ofFile(file))) {
         // Handle workbook here...
     }
 
@@ -143,7 +143,7 @@ Users open a workbook file to write using a `ByteSink`. The user gives the desir
 
 In this approach, the user simply opens writer, writes the rows, and closes the writer. This results in a workbook with one sheet.
 
-    try (WorksheetWriter worksheet=SpreadsheetFactory.getInstance().writeTabularActiveWorksheet(sink, "csv")
+    try (TabularWorksheetRowWriter worksheet=SpreadsheetFactory.getInstance().writeTabularActiveWorksheet(sink, "csv")
             .writeHeaders("alpha", "bravo")) {
         worksheet.writeValuesRow("a", "b");
         worksheet.writeValuesRow("1", "2");
@@ -153,11 +153,11 @@ In this approach, the user simply opens writer, writes the rows, and closes the 
 
 In this approach, the user simply opens writer, writes the rows, and closes the writer. The user may then open and write additional sheets the same way.
 
-    try (WorkbookWriter workbook=SpreadsheetFactory.getInstance().writeTabularWorkbook(sink, "csv")) {
+    try (TabularWorkbookWriter workbook=SpreadsheetFactory.getInstance().writeTabularWorkbook(sink, "csv")) {
         try (WorksheetWriter worksheet=workbook.getWorksheet("sheet1").writeHeaders("alpha", "bravo")) {
             // Write worksheet...
         }
-        try (WorksheetWriter worksheet=workbook.getWorksheet("sheet2").writeHeaders("charlie", "delta")) {
+        try (TabularWorksheetRowWriter worksheet=workbook.getWorksheet("sheet2").writeHeaders("charlie", "delta")) {
             // Write worksheet...
         }
     }
