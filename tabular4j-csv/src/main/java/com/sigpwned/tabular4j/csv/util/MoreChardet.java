@@ -93,8 +93,7 @@ public final class MoreChardet {
    */
   private static boolean isTextHeuristic(byte[] preview, Charset detectedCharset) {
     for (byte[] blacklisted : new byte[][] {XLSX_MAGIC_BYTES, XLS_MAGIC_BYTES}) {
-      if (preview.length >= blacklisted.length && Arrays.compare(blacklisted, 0, blacklisted.length,
-          preview, 0, blacklisted.length) == 0) {
+      if (isPrefix(blacklisted, preview)) {
         // This prefix is blacklisted. Not text!
         return false;
       }
@@ -109,5 +108,10 @@ public final class MoreChardet {
     });
 
     return alphanum.get() > total.get() / 2;
+  }
+
+  private static boolean isPrefix(byte[] needle, byte[] haystack) {
+    return haystack.length >= needle.length
+        && Arrays.compare(haystack, 0, needle.length, needle, 0, needle.length) == 0;
   }
 }

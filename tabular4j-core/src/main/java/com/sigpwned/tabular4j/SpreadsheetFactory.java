@@ -87,6 +87,7 @@ public class SpreadsheetFactory {
     for (SpreadsheetFormatFactory format : getFormats()) {
       try {
         result = format.readWorkbook(source);
+        break;
       } catch (InvalidFileSpreadsheetException e) {
         // This is OK. It's just not in the given format.
       }
@@ -101,6 +102,7 @@ public class SpreadsheetFactory {
     for (SpreadsheetFormatFactory format : getFormats()) {
       try {
         result = format.readActiveWorksheet(source);
+        break;
       } catch (IOException e) {
         // TODO Should we only catch a specific format mismatch exception here?
         // This is OK. It's just not in the given format.

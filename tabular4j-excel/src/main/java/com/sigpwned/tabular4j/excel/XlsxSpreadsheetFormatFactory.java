@@ -30,6 +30,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.sigpwned.tabular4j.excel.read.ExcelWorkbookReader;
+import com.sigpwned.tabular4j.excel.util.Excel;
 import com.sigpwned.tabular4j.excel.write.ExcelWorkbookWriter;
 import com.sigpwned.tabular4j.excel.write.ExcelWorksheetWriter;
 import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
@@ -97,6 +98,10 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
 
   @Override
   public WorkbookReader readWorkbook(File file) throws IOException {
+    // This isn't ideal, but POI logs an error if the file is invalid, so let's
+    // try to catch as many issues up front as we can.
+    if (!Excel.isPossiblyXlsxFile(file))
+      throw new InvalidFileSpreadsheetException();
     XSSFWorkbook workbook;
     try {
       workbook = new XSSFWorkbook(file);
