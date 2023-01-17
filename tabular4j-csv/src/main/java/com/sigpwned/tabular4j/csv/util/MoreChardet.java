@@ -99,15 +99,15 @@ public final class MoreChardet {
       }
     }
 
-    final AtomicInteger alphanum = new AtomicInteger(0);
+    final AtomicInteger texty = new AtomicInteger(0);
     final AtomicInteger total = new AtomicInteger(0);
     new String(preview, detectedCharset).codePoints().forEach(cp -> {
-      if (Character.isLetterOrDigit(cp))
-        alphanum.incrementAndGet();
+      if (Character.isLetterOrDigit(cp) || Character.isWhitespace(cp) || cp == '"' || cp == ',')
+        texty.incrementAndGet();
       total.incrementAndGet();
     });
 
-    return alphanum.get() > total.get() / 2;
+    return texty.get() > total.get() / 2;
   }
 
   private static boolean isPrefix(byte[] needle, byte[] haystack) {
