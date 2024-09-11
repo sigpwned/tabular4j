@@ -29,7 +29,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import com.sigpwned.tabular4j.csv.CsvSpreadsheetFormatFactory;
 import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
 import com.sigpwned.tabular4j.model.WorksheetReader;
 import com.sigpwned.tabular4j.model.WorksheetRow;

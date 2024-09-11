@@ -102,12 +102,17 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
     // try to catch as many issues up front as we can.
     if (!Excel.isPossiblyXlsxFile(file))
       throw new InvalidFileSpreadsheetException();
-    XSSFWorkbook workbook;
+
+    XSSFWorkbook workbook = null;
     try {
       workbook = new XSSFWorkbook(file);
     } catch (InvalidFormatException | UnsupportedFileFormatException e) {
+      // To appease compiler warnings...
+      if (workbook != null)
+        workbook.close();
       throw new InvalidFileSpreadsheetException();
     }
+
     return new ExcelWorkbookReader(getConfig(), workbook);
   }
 

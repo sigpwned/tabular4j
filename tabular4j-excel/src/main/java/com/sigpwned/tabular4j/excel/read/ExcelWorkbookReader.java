@@ -37,6 +37,7 @@ public class ExcelWorkbookReader implements WorkbookReader {
   private final Workbook workbook;
   private final List<Sheet> visibleSheets;
 
+  @SuppressWarnings("resource")
   public ExcelWorkbookReader(ExcelConfigRegistry config, Workbook workbook) {
     this.config = requireNonNull(config);
     this.workbook = requireNonNull(workbook);
@@ -72,8 +73,7 @@ public class ExcelWorkbookReader implements WorkbookReader {
     List<Sheet> vss = getVisibleSheets();
     int asi = getWorkbook().getActiveSheetIndex();
     return IntStream.range(0, vss.size())
-        .filter(i -> getWorkbook().getSheetIndex(vss.get(i)) == asi)
-        .findFirst().orElse(0);
+        .filter(i -> getWorkbook().getSheetIndex(vss.get(i)) == asi).findFirst().orElse(0);
   }
 
   @Override
