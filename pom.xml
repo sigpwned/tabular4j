@@ -75,6 +75,7 @@
     </properties>
 
     <modules>
+        <module>tabular4j-bom</module>
         <module>tabular4j-core</module>
         <module>tabular4j-csv</module>
         <module>tabular4j-excel</module>
