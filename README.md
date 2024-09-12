@@ -17,6 +17,24 @@ Tabular data is an important interface between humans and machine. However, supp
 * To expose all features for all data formats, e.g. charts in Excel. Outstanding specialized libraries already exist for the use and manipulation of specific data formats.
 * To support all data formats that can represent tabular data. The library's primary goal is to support the data formats most commonly exchanged between humans and computers.
 
+## Installing
+
+You can get the library from Maven central:
+
+    <!-- To add support for CSV and TSV files -->
+    <dependency>
+        <groupId>com.sigpwned</groupId>
+        <artifactId>tabular4j-csv</artifactId>
+        <version>0.0.0-b2</version>
+    </dependency>
+
+    <!-- To add support for Excel XLS and XLSX files -->
+    <dependency>
+        <groupId>com.sigpwned</groupId>
+        <artifactId>tabular4j-excel</artifactId>
+        <version>0.0.0-b2</version>
+    </dependency>
+
 ## Data Model
 
 ### Worksheets
