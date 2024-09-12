@@ -19,6 +19,8 @@ Tabular data is an important interface between humans and machine. However, supp
 
 ## Installing
 
+### Maven Dependencies
+
 You can get the library from Maven central:
 
     <!-- To add support for CSV and TSV files -->
@@ -34,6 +36,33 @@ You can get the library from Maven central:
         <artifactId>tabular4j-excel</artifactId>
         <version>0.0.0-b2</version>
     </dependency>
+
+### Maven Build
+
+The tabular4j library uses the [ServiceLoader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/ServiceLoader.html) to discover supported file formats automatically at runtime. This requires each JAR file to include a special `META-INF/services/com.sigpwned.tabular4j.SpreasheetFormatFactory` file that lists file format factory classes the JAR provides. To ensure that your application gets *all* of the supported file formats, as opposed to just the supported file formats from the last JAR added to your build, use the `maven-shade-plugin` to merge the `META-INF/services/com.sigpwned.tabular4j.SpreasheetFormatFactory` files from all of the JARs in your build: 
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version> <!-- use current version -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 ## Data Model
 
@@ -184,11 +213,14 @@ In this approach, the user simply opens writer, writes the rows, and closes the 
 
 ### What file formats are supported?
 
-The library currently supports the following file formats:
+Out of the box, the library supports the following file formats via the following modules:
 
-* `xlsx` -- Using the excellent [Apache POI](https://poi.apache.org/) library
-* `xls` -- Also using the excellent [Apache POI](https://poi.apache.org/) library
-* `csv` -- Using the [`csv4j`](https://github.com/sigpwned/csv4j)
+* `tabular4j-excel` -- Using the excellent [Apache POI](https://poi.apache.org/) library
+    * `xlsx`
+    * `xls`
+* `tabular4j-csv` -- Using the [`csv4j`](https://github.com/sigpwned/csv4j) library
+    * `csv`
+    * `tsv`
 
 ### What file formats do you plan to support in the future?
 
