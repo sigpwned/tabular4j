@@ -20,6 +20,7 @@
 package com.sigpwned.tabular4j;
 
 import java.io.IOException;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.model.WorkbookReader;
@@ -28,8 +29,26 @@ import com.sigpwned.tabular4j.model.WorksheetReader;
 import com.sigpwned.tabular4j.model.WorksheetWriter;
 
 public interface SpreadsheetFormatFactory {
+  /**
+   * Read a workbook from the given source.
+   * 
+   * @param source the source to read from
+   * @return the workbook reader
+   * @throws IOException if an I/O error occurs
+   * @throws InvalidFileSpreadsheetException if the given data does not contain a valid workbook of
+   *         this format
+   */
   public WorkbookReader readWorkbook(ByteSource source) throws IOException;
 
+  /**
+   * Read the active worksheet from the workbook in the given source.
+   * 
+   * @param source the source to read from
+   * @return the worksheet reader
+   * @throws IOException if an I/O error occurs
+   * @throws InvalidFileSpreadsheetException if the given data does not contain a valid workbook of
+   *         this format
+   */
   public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException;
 
   public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException;

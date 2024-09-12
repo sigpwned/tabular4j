@@ -25,17 +25,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import com.sigpwned.csv4j.CsvField;
+import com.sigpwned.csv4j.CsvFormat;
 import com.sigpwned.tabular4j.csv.mapper.BoxedCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.CoreCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.InternetCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.JavaTimeCsvValueMapperFactory;
 import com.sigpwned.tabular4j.csv.mapper.PrimitiveCsvValueMapperFactory;
+import com.sigpwned.tabular4j.csv.util.Csv;
 import com.sigpwned.tabular4j.type.GenericType;
 import com.sigpwned.tabular4j.type.QualifiedType;
 
 public class CsvConfigRegistry {
   private final List<CsvValueMapperFactory> valueMapperFactories;
   private final CsvValueMapperFactory nullValueMapperFactory;
+  private final List<CsvFormat> formats;
 
   public CsvConfigRegistry() {
     this.valueMapperFactories = new ArrayList<>();
@@ -64,6 +67,9 @@ public class CsvConfigRegistry {
         });
       }
     };
+    this.formats = new ArrayList<>();
+    addFormat(Csv.STANDARD_FILE_FORMAT);
+    addFormat(Csv.TSV_FILE_FORMAT);
   }
 
   public void addValueMapperFirst(CsvValueMapperFactory valueMapperFactory) {
@@ -105,5 +111,13 @@ public class CsvConfigRegistry {
    */
   public List<CsvValueMapperFactory> getValueMapperFactories() {
     return unmodifiableList(valueMapperFactories);
+  }
+
+  public void addFormat(CsvFormat format) {
+    formats.add(format);
+  }
+
+  public List<CsvFormat> getFormats() {
+    return unmodifiableList(formats);
   }
 }

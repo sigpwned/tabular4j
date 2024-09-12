@@ -22,30 +22,22 @@ package com.sigpwned.tabular4j.csv.write;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import com.sigpwned.csv4j.CsvField;
 import com.sigpwned.csv4j.CsvRecord;
 import com.sigpwned.csv4j.write.CsvWriter;
 import com.sigpwned.tabular4j.csv.CsvConfigRegistry;
 import com.sigpwned.tabular4j.csv.util.Csv;
-import com.sigpwned.tabular4j.io.ByteSink;
-import com.sigpwned.tabular4j.io.CharSink;
 import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
 import com.sigpwned.tabular4j.model.WorksheetWriter;
 
 public class CsvWorksheetWriter implements WorksheetWriter {
   private final CsvConfigRegistry config;
-  private final CharSink sink;
-  private CsvWriter delegate;
+  private final CsvWriter writer;
 
-  public CsvWorksheetWriter(CsvConfigRegistry config, ByteSink sink) {
-    this(config, sink.asCharSink(StandardCharsets.UTF_8));
-  }
-
-  public CsvWorksheetWriter(CsvConfigRegistry config, CharSink sink) {
+  public CsvWorksheetWriter(CsvConfigRegistry config, CsvWriter writer) {
     this.config = requireNonNull(config);
-    this.sink = requireNonNull(sink);
+    this.writer = requireNonNull(writer);
   }
 
   @Override
@@ -60,17 +52,12 @@ public class CsvWorksheetWriter implements WorksheetWriter {
 
   @Override
   public void writeRow(List<WorksheetCellDefinition> cells) throws IOException {
-    if (delegate == null)
-      delegate = new CsvWriter(getSink().getWriter());
-
     List<CsvField> fields = cells.stream().map(cell -> {
       CsvField field = new CsvField();
       if (cell != null && cell.getValue() != null) {
-        getConfig().findValueMapperForType(cell.getValue().getType())
-            .orElseThrow(() -> {
-              throw new IllegalStateException("no mapper for type");
-            })
-            .setValue(field, cell.getValue().getValue());
+        getConfig().findValueMapperForType(cell.getValue().getType()).orElseThrow(() -> {
+          throw new IllegalStateException("no mapper for type");
+        }).setValue(field, cell.getValue().getValue());
       } else {
         field = field.withQuoted(false).withText("");
       }
@@ -78,13 +65,12 @@ public class CsvWorksheetWriter implements WorksheetWriter {
     }).collect(toList());
 
     // We don't care about style at all
-    delegate.writeNext(CsvRecord.of(fields));
+    getWriter().writeNext(CsvRecord.of(fields));
   }
 
   @Override
   public void close() throws IOException {
-    if (delegate != null)
-      delegate.close();
+    getWriter().close();
   }
 
   /**
@@ -94,10 +80,7 @@ public class CsvWorksheetWriter implements WorksheetWriter {
     return config;
   }
 
-  /**
-   * @return the sink
-   */
-  private CharSink getSink() {
-    return sink;
+  private CsvWriter getWriter() {
+    return writer;
   }
 }

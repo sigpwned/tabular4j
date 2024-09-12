@@ -43,6 +43,12 @@ public interface ByteSource {
     return new UrlByteSource(url);
   }
 
+  /**
+   * Get an {@link InputStream input stream} to read the bytes from this source. Must be repeatable.
+   * 
+   * @return the input stream
+   * @throws IOException if an I/O error occurs
+   */
   public InputStream getInputStream() throws IOException;
 
   public default CharSource asCharSource(Charset charset) throws IOException {

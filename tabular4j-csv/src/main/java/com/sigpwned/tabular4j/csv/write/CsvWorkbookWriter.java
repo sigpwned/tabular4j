@@ -22,7 +22,11 @@ package com.sigpwned.tabular4j.csv.write;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.NoSuchElementException;
+import com.sigpwned.csv4j.CsvFormat;
+import com.sigpwned.csv4j.write.CsvWriter;
 import com.sigpwned.tabular4j.csv.CsvConfigRegistry;
+import com.sigpwned.tabular4j.csv.util.Csv;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.CharSink;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
@@ -31,20 +35,23 @@ import com.sigpwned.tabular4j.model.WorksheetWriter;
 public class CsvWorkbookWriter implements WorkbookWriter {
   private final CsvConfigRegistry config;
   private final CharSink sink;
+  private final CsvFormat format;
 
-  public CsvWorkbookWriter(CsvConfigRegistry config, ByteSink sink) {
-    this(config, sink.asCharSink(StandardCharsets.UTF_8));
+  public CsvWorkbookWriter(CsvConfigRegistry config, ByteSink sink, CsvFormat format) {
+    this(config, sink.asCharSink(StandardCharsets.UTF_8), format);
   }
 
-  public CsvWorkbookWriter(CsvConfigRegistry config, CharSink sink) {
+  public CsvWorkbookWriter(CsvConfigRegistry config, CharSink sink, CsvFormat format) {
     this.config = requireNonNull(config);
     this.sink = requireNonNull(sink);
+    this.format = requireNonNull(format);
   }
 
   @Override
-  public WorksheetWriter getWorksheet(String name) {
-    // We don't care about the name.
-    return new CsvWorksheetWriter(getConfig(), getSink());
+  public WorksheetWriter getWorksheet(String name) throws IOException {
+    if (!name.equals(Csv.WORKSHEET_NAME))
+      throw new NoSuchElementException();
+    return new CsvWorksheetWriter(getConfig(), new CsvWriter(getFormat(), getSink().getWriter()));
   }
 
   @Override
@@ -64,5 +71,12 @@ public class CsvWorkbookWriter implements WorkbookWriter {
    */
   private CharSink getSink() {
     return sink;
+  }
+
+  /**
+   * @return the format
+   */
+  public CsvFormat getFormat() {
+    return format;
   }
 }

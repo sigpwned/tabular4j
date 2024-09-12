@@ -22,13 +22,17 @@ package com.sigpwned.tabular4j.csv;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import com.sigpwned.csv4j.CsvFormat;
 import com.sigpwned.csv4j.read.CsvReader;
+import com.sigpwned.csv4j.write.CsvWriter;
 import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
 import com.sigpwned.tabular4j.csv.read.CsvWorkbookReader;
 import com.sigpwned.tabular4j.csv.read.CsvWorksheetReader;
+import com.sigpwned.tabular4j.csv.util.Csv;
 import com.sigpwned.tabular4j.csv.util.MoreChardet;
 import com.sigpwned.tabular4j.csv.write.CsvWorkbookWriter;
 import com.sigpwned.tabular4j.csv.write.CsvWorksheetWriter;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.io.CharSink;
@@ -49,20 +53,47 @@ public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
 
   @Override
   public CsvWorkbookReader readWorkbook(ByteSource source) throws IOException {
-    return readWorkbook(MoreChardet.decode(source));
+    CharSource decoded;
+    try {
+      decoded = MoreChardet.decode(source);
+    } catch (IOException e) {
+      throw new InvalidFileSpreadsheetException();
+    }
+    return readWorkbook(decoded);
   }
 
   public CsvWorkbookReader readWorkbook(CharSource source) throws IOException {
-    return new CsvWorkbookReader(getConfig(), source);
+    CsvFormat format = Csv.detectFormat(getConfig(), source).orElse(null);
+    if (format == null)
+      throw new InvalidFileSpreadsheetException();
+    return readWorkbook(source, format);
+  }
+
+  public CsvWorkbookReader readWorkbook(CharSource source, CsvFormat format) throws IOException {
+    return new CsvWorkbookReader(getConfig(), source, format);
   }
 
   @Override
   public CsvWorksheetReader readActiveWorksheet(ByteSource source) throws IOException {
-    return readActiveWorksheet(MoreChardet.decode(source));
+    CharSource decoded;
+    try {
+      decoded = MoreChardet.decode(source);
+    } catch (IOException e) {
+      throw new InvalidFileSpreadsheetException();
+    }
+    return readActiveWorksheet(decoded);
   }
 
   public CsvWorksheetReader readActiveWorksheet(CharSource source) throws IOException {
-    return new CsvWorksheetReader(getConfig(), new CsvReader(source.getReader()));
+    CsvFormat format = Csv.detectFormat(getConfig(), source).orElse(null);
+    if (format == null)
+      throw new InvalidFileSpreadsheetException();
+    return readActiveWorksheet(source, format);
+  }
+
+  public CsvWorksheetReader readActiveWorksheet(CharSource source, CsvFormat format)
+      throws IOException {
+    return new CsvWorksheetReader(getConfig(), new CsvReader(format, source.getReader()));
   }
 
   @Override
@@ -71,7 +102,11 @@ public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   }
 
   public CsvWorkbookWriter writeWorkbook(CharSink sink) throws IOException {
-    return new CsvWorkbookWriter(getConfig(), sink);
+    return writeWorkbook(sink, Csv.STANDARD_FILE_FORMAT);
+  }
+
+  public CsvWorkbookWriter writeWorkbook(CharSink sink, CsvFormat format) throws IOException {
+    return new CsvWorkbookWriter(getConfig(), sink, format);
   }
 
   @Override
@@ -80,7 +115,12 @@ public class CsvSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   }
 
   public CsvWorksheetWriter writeActiveWorksheet(CharSink sink) throws IOException {
-    return new CsvWorksheetWriter(getConfig(), sink);
+    return writeActiveWorksheet(sink, Csv.STANDARD_FILE_FORMAT);
+  }
+
+  public CsvWorksheetWriter writeActiveWorksheet(CharSink sink, CsvFormat format)
+      throws IOException {
+    return new CsvWorksheetWriter(getConfig(), new CsvWriter(format, sink.getWriter()));
   }
 
   /**

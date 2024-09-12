@@ -19,8 +19,11 @@
  */
 package com.sigpwned.tabular4j.csv.read;
 
+import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import com.sigpwned.csv4j.CsvFormat;
 import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.tabular4j.csv.CsvConfigRegistry;
 import com.sigpwned.tabular4j.csv.util.Csv;
@@ -33,14 +36,16 @@ import com.sigpwned.tabular4j.model.WorksheetReader;
 public class CsvWorkbookReader implements WorkbookReader {
   private final CsvConfigRegistry config;
   private final CharSource source;
+  private final CsvFormat format;
 
-  public CsvWorkbookReader(CsvConfigRegistry config, ByteSource source) {
-    this(config, MoreChardet.decode(source));
+  public CsvWorkbookReader(CsvConfigRegistry config, ByteSource source, CsvFormat format) throws IOException {
+    this(config, MoreChardet.decode(source), format);
   }
 
-  public CsvWorkbookReader(CsvConfigRegistry config, CharSource source) {
-    this.config = config;
-    this.source = source;
+  public CsvWorkbookReader(CsvConfigRegistry config, CharSource source, CsvFormat format) {
+    this.config = requireNonNull(config);
+    this.source = requireNonNull(source);
+    this.format = requireNonNull(format);
   }
 
   @Override
@@ -60,7 +65,9 @@ public class CsvWorkbookReader implements WorkbookReader {
 
   @Override
   public WorksheetReader getWorksheet(int index) throws IOException {
-    return new CsvWorksheetReader(getConfig(), new CsvReader(getSource().getReader()));
+    if (index != 0)
+      throw new NoSuchElementException();
+    return new CsvWorksheetReader(getConfig(), new CsvReader(getFormat(), getSource().getReader()));
   }
 
   @Override
@@ -80,5 +87,12 @@ public class CsvWorkbookReader implements WorkbookReader {
    */
   private CharSource getSource() {
     return source;
+  }
+
+  /**
+   * @return the format
+   */
+  public CsvFormat getFormat() {
+    return format;
   }
 }

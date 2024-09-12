@@ -25,10 +25,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
 import com.sigpwned.tabular4j.model.WorksheetReader;
 import com.sigpwned.tabular4j.model.WorksheetRow;
@@ -45,18 +47,24 @@ public class CsvTest {
       try (WorksheetWriter w = factory.writeActiveWorksheet(() -> new FileOutputStream(tmp))) {
         w.writeRow(List.of(WorksheetCellDefinition.ofValue("hello"),
             WorksheetCellDefinition.ofValue("world")));
+        w.writeRow(List.of(WorksheetCellDefinition.ofValue("alpha"),
+            WorksheetCellDefinition.ofValue("bravo")));
       }
 
       try (WorksheetReader r = factory.readActiveWorksheet(() -> new FileInputStream(tmp))) {
-        WorksheetRow row = r.readRow();
-        values.add(row.getCells().get(0).getValue(String.class));
-        values.add(row.getCells().get(1).getValue(String.class));
+        WorksheetRow row1 = r.readRow();
+        values.add(row1.getCells().get(0).getValue(String.class));
+        values.add(row1.getCells().get(1).getValue(String.class));
+
+        WorksheetRow row2 = r.readRow();
+        values.add(row2.getCells().get(0).getValue(String.class));
+        values.add(row2.getCells().get(1).getValue(String.class));
       }
     } finally {
       tmp.delete();
     }
 
-    assertThat(values, is(List.of("hello", "world")));
+    assertThat(values, is(List.of("hello", "world", "alpha", "bravo")));
   }
 
   @Test
@@ -71,18 +79,37 @@ public class CsvTest {
       try (WorksheetWriter w = factory.writeActiveWorksheet(() -> new FileOutputStream(tmp))) {
         w.writeRow(List.of(WorksheetCellDefinition.ofValue("hello"),
             WorksheetCellDefinition.ofValue(1), WorksheetCellDefinition.ofValue(now)));
+        w.writeRow(List.of(WorksheetCellDefinition.ofValue("world"),
+            WorksheetCellDefinition.ofValue(2), WorksheetCellDefinition.ofValue(now)));
       }
 
       try (WorksheetReader r = factory.readActiveWorksheet(() -> new FileInputStream(tmp))) {
-        WorksheetRow row = r.readRow();
-        values.add(row.getCells().get(0).getValue(String.class));
-        values.add(row.getCells().get(1).getValue(Integer.class));
-        values.add(row.getCells().get(2).getValue(Instant.class));
+        WorksheetRow row1 = r.readRow();
+        values.add(row1.getCells().get(0).getValue(String.class));
+        values.add(row1.getCells().get(1).getValue(Integer.class));
+        values.add(row1.getCells().get(2).getValue(Instant.class));
+
+        WorksheetRow row2 = r.readRow();
+        values.add(row2.getCells().get(0).getValue(String.class));
+        values.add(row2.getCells().get(1).getValue(Integer.class));
+        values.add(row2.getCells().get(2).getValue(Instant.class));
       }
     } finally {
       tmp.delete();
     }
 
-    assertThat(values, is(List.of("hello", 1, now)));
+    assertThat(values, is(List.of("hello", 1, now, "world", 2, now)));
+  }
+
+  @Test(expected = InvalidFileSpreadsheetException.class)
+  public void xlsxNotAcceptableTest() throws IOException {
+    final URL url = getClass().getResource("example.xlsx");
+    new CsvSpreadsheetFormatFactory().readWorkbook(url::openStream);
+  }
+
+  @Test(expected = InvalidFileSpreadsheetException.class)
+  public void xlsNotAcceptableTest() throws IOException {
+    final URL url = getClass().getResource("example.xls");
+    new CsvSpreadsheetFormatFactory().readWorkbook(url::openStream);
   }
 }

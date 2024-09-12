@@ -19,19 +19,13 @@
  */
 package com.sigpwned.tabular4j.csv.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.SequenceInputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.sigpwned.chardet4j.Chardet;
-import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.io.CharSource;
 
@@ -40,38 +34,27 @@ public final class MoreChardet {
 
   private static final int TEXT_BUF_LEN = 16384;
 
-  public static CharSource decode(ByteSource source) {
-    return new CharSource() {
-      private Charset charset;
+  public static CharSource decode(ByteSource source) throws IOException {
+    return decode(source, "UTF-8");
+  }
 
-      @Override
-      public Reader getReader() throws IOException {
-        InputStreamReader result = null;
+  public static CharSource decode(ByteSource source, String declaredEncoding) throws IOException {
+    final byte[] buf;
+    try (InputStream in = source.getInputStream()) {
+      buf = in.readNBytes(TEXT_BUF_LEN);
+    }
 
-        InputStream in = source.getInputStream();
-        try {
-          if (charset != null) {
-            result = new InputStreamReader(in, charset);
-          } else {
-            byte[] buf = in.readNBytes(TEXT_BUF_LEN);
-            if (buf.length == 0)
-              throw new EOFException();
+    if (buf.length == 0)
+      return Reader::nullReader;
 
-            result = Chardet.decode(new SequenceInputStream(new ByteArrayInputStream(buf), in),
-                StandardCharsets.UTF_8);
-            charset = Charset.forName(result.getEncoding());
+    final Charset charset = Chardet.detectCharset(buf, declaredEncoding).orElse(null);
+    if (charset == null)
+      throw new IOException("failed to detect charset");
 
-            if (!isTextHeuristic(buf, charset))
-              throw new InvalidFileSpreadsheetException();
-          }
-        } finally {
-          if (result == null)
-            in.close();
-        }
+    if (!isTextHeuristic(buf, charset))
+      throw new IOException("data does not appear to be text");
 
-        return result;
-      }
-    };
+    return source.asCharSource(charset);
   }
 
   /**
