@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Optional;
 
 public final class MoreFiles {
   private MoreFiles() {}
@@ -73,5 +74,19 @@ public final class MoreFiles {
       result = in.readNBytes(len);
     }
     return result;
+  }
+
+  /**
+   * Get the file extension from the given file. The file extension is the substring after the last
+   * period (".") in the file name. If the file name does not contain a period, this method returns
+   * an empty optional. If the file name ends with a period, this method returns an empty string. If
+   * the file name starts with a period, this method returns an empty string.
+   * 
+   * @param file The file
+   * @return The file extension, if any
+   * @see Filenames#getExtension(String)
+   */
+  public static Optional<String> getFileExtension(File file) {
+    return Filenames.getExtension(file.getName());
   }
 }
