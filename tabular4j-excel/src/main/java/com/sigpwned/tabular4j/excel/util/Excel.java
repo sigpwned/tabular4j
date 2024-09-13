@@ -20,9 +20,9 @@
 package com.sigpwned.tabular4j.excel.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import com.sigpwned.tabular4j.util.MoreFiles;
 
 public final class Excel {
   private Excel() {}
@@ -48,11 +48,7 @@ public final class Excel {
     return Arrays.equals(Excel.XLS_MAGIC_BYTES, readNBytes(file, Excel.XLS_MAGIC_BYTES.length));
   }
 
-  private static byte[] readNBytes(File f, int count) throws IOException {
-    byte[] result;
-    try (FileInputStream in = new FileInputStream(f)) {
-      result = in.readNBytes(count);
-    }
-    return result;
+  private static byte[] readNBytes(File f, int len) throws IOException {
+    return MoreFiles.readNBytes(f, len);
   }
 }
