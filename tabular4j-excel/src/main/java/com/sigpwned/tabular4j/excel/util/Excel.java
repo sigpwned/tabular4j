@@ -34,7 +34,7 @@ public final class Excel {
   public static final byte[] XLSX_MAGIC_BYTES = new byte[] {(byte) 0x50, (byte) 0x4B};
 
   public static boolean isPossiblyXlsxFile(File file) throws IOException {
-    return Arrays.equals(Excel.XLSX_MAGIC_BYTES, readBytes(file, Excel.XLSX_MAGIC_BYTES.length));
+    return Arrays.equals(Excel.XLSX_MAGIC_BYTES, readNBytes(file, Excel.XLSX_MAGIC_BYTES.length));
   }
 
   /**
@@ -45,10 +45,10 @@ public final class Excel {
       (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, (byte) 0x1A, (byte) 0xE1};
 
   public static boolean isPossiblyXlsFile(File file) throws IOException {
-    return Arrays.equals(Excel.XLS_MAGIC_BYTES, readBytes(file, Excel.XLS_MAGIC_BYTES.length));
+    return Arrays.equals(Excel.XLS_MAGIC_BYTES, readNBytes(file, Excel.XLS_MAGIC_BYTES.length));
   }
 
-  private static byte[] readBytes(File f, int count) throws IOException {
+  private static byte[] readNBytes(File f, int count) throws IOException {
     byte[] result;
     try (FileInputStream in = new FileInputStream(f)) {
       result = in.readNBytes(count);

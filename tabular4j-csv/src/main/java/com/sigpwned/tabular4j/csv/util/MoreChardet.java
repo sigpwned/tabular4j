@@ -34,10 +34,28 @@ public final class MoreChardet {
 
   private static final int TEXT_BUF_LEN = 16384;
 
+  /**
+   * Decode the given byte source into a character source, using UTF-8 as the default encoding.
+   * 
+   * @param source the byte source
+   * @return the character source
+   * @throws IOException if an I/O error occurs
+   * @see #decode(ByteSource, String)
+   */
   public static CharSource decode(ByteSource source) throws IOException {
     return decode(source, "UTF-8");
   }
 
+  /**
+   * Decode the given byte source into a character source, preferring the declared encoding if
+   * available. A prefix of the byte source is analyzed to determine the encoding, with the declared
+   * encoding receiving a bump in priority.
+   * 
+   * @param source the byte source
+   * @param declaredEncoding the declared encoding, or {@code null} if not available
+   * @return the character source
+   * @throws IOException if an I/O error occurs
+   */
   public static CharSource decode(ByteSource source, String declaredEncoding) throws IOException {
     final byte[] buf;
     try (InputStream in = source.getInputStream()) {
@@ -93,6 +111,10 @@ public final class MoreChardet {
     return texty.get() > total.get() / 2;
   }
 
+  /**
+   * Returns {@code true} if the given needle is a prefix of the given haystack, or {@code false}
+   * otherwise.
+   */
   private static boolean isPrefix(byte[] needle, byte[] haystack) {
     return haystack.length >= needle.length
         && Arrays.compare(haystack, 0, needle.length, needle, 0, needle.length) == 0;

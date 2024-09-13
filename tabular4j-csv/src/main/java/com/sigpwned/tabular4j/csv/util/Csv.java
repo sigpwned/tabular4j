@@ -22,12 +22,11 @@ package com.sigpwned.tabular4j.csv.util;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Optional;
+import java.io.UncheckedIOException;
 import com.sigpwned.csv4j.CsvFormat;
 import com.sigpwned.csv4j.CsvRecord;
 import com.sigpwned.csv4j.read.CsvReader;
 import com.sigpwned.csv4j.read.MalformedRecordException;
-import com.sigpwned.tabular4j.csv.CsvConfigRegistry;
 import com.sigpwned.tabular4j.io.CharSource;
 
 public final class Csv {
@@ -42,15 +41,15 @@ public final class Csv {
   private static final int PREVIEW_LENGTH = 64 * 1024;
 
   /**
-   * Detect the format of the given CSV-formatted character source.
+   * Check if the given character source conforms to the given CSV format.
    * 
-   * @param config The configuration to use. Only the formats in this configuration will be tested.
-   * @param source The character source to inspect
-   * @return The detected format, or empty if no format was detected
-   * @throws IOException if an I/O error
+   * @param format The format to check against
+   * @param source The character source
+   * @return {@code true} if the character source conforms to the format, {@code false} otherwise
+   * @throws IOException if an I/O error occurs
+   * @see #conforms(CsvFormat, char[], int, int)
    */
-  public static Optional<CsvFormat> detectFormat(CsvConfigRegistry config, CharSource source)
-      throws IOException {
+  public static boolean conforms(CsvFormat format, CharSource source) throws IOException {
     char[] cbuf = new char[PREVIEW_LENGTH];
 
     int cbuflen;
@@ -58,37 +57,41 @@ public final class Csv {
       cbuflen = readNChars(r, cbuf, 0, cbuf.length);
     }
 
-    return detectFormat(config, cbuf, 0, cbuflen);
+    try {
+      return conforms(format, cbuf, 0, cbuflen);
+    } catch (UncheckedIOException e) {
+      throw e.getCause();
+    }
   }
 
   /**
-   * Detect the format of the given CSV-formatted character buffer region.
+   * Check if the given character buffer region conforms to the given CSV format. The buffer region
+   * is expected to contain at least two records, and the records are expected to have at least two
+   * columns. The records are expected to have the same number of columns. This is similar to the
+   * approach taken by <a href="https://github.com/file/file">the Fine Free File Command</a>.
    * 
-   * @param config The configuration to use. Only the formats in this configuration will be tested.
-   * @param cbuf The character buffer to inspect
+   * @param format The format to check against
+   * @param cbuf The character buffer
    * @param off The offset into the character buffer
    * @param len The number of characters to inspect, starting at offset
-   * @return The detected format, or empty if no format was detected
-   * @throws IOException if an I/O error
+   * @return {@code true} if the character buffer region conforms to the format, {@code false}
+   *         otherwise
+   * @throws UncheckedIOException if an I/O error occurs
    */
-  public static Optional<CsvFormat> detectFormat(CsvConfigRegistry config, char[] cbuf, int off,
-      int len) throws IOException {
+  public static boolean conforms(CsvFormat format, char[] cbuf, int off, int len) {
     // TODO Should we inspect headers?
-    // TODO Should we adapt buffer to be bigger?
-    // TODO Should we read until we get 3 newlines, or something? What about quoting?
-    // TODO What if both rows have 1 field because we're using the wrong separator?
-    // TODO What if headers and first data row have different number of fields?
-    for (CsvFormat format : config.getFormats()) {
-      try (CsvReader r = new CsvReader(format, new CharArrayReader(cbuf, off, len))) {
-        CsvRecord r1 = r.readNext();
-        CsvRecord r2 = r.readNext();
-        if (r1 != null && r2 != null && r1.size() == r2.size())
-          return Optional.of(format);
-      } catch (MalformedRecordException e) {
-        // This is totally normal when parsing a CSV file with the wrong format
-      }
+    try (CsvReader r = new CsvReader(format, new CharArrayReader(cbuf, off, len))) {
+      CsvRecord r1 = r.readNext();
+      CsvRecord r2 = r.readNext();
+      if (r1 != null && r2 != null && r1.size() > 1 && r2.size() > 1 && r1.size() == r2.size())
+        return true;
+    } catch (MalformedRecordException e) {
+      // This is totally normal when parsing a CSV file with the wrong format
+    } catch (IOException e) {
+      // We're using in-memory I/O, so this should never happen, but JIC...
+      throw new UncheckedIOException(e);
     }
-    return Optional.empty();
+    return false;
   }
 
   /**

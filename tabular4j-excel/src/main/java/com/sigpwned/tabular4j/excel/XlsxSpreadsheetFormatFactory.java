@@ -19,134 +19,54 @@
  */
 package com.sigpwned.tabular4j.excel;
 
-import static java.util.Objects.requireNonNull;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.poi.UnsupportedFileFormatException;
+import java.util.Set;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.sigpwned.tabular4j.excel.read.ExcelWorkbookReader;
 import com.sigpwned.tabular4j.excel.util.Excel;
 import com.sigpwned.tabular4j.excel.write.ExcelWorkbookWriter;
-import com.sigpwned.tabular4j.excel.write.ExcelWorksheetWriter;
 import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
-import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorkbookWriter;
-import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
-import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetWriter;
 import com.sigpwned.tabular4j.io.ByteSink;
-import com.sigpwned.tabular4j.io.ByteSource;
-import com.sigpwned.tabular4j.io.sink.FileByteSink;
-import com.sigpwned.tabular4j.io.source.FileByteSource;
+import com.sigpwned.tabular4j.mime.MimeType;
 import com.sigpwned.tabular4j.model.WorkbookReader;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
-import com.sigpwned.tabular4j.model.WorksheetReader;
-import com.sigpwned.tabular4j.model.WorksheetWriter;
-import com.sigpwned.tabular4j.util.MoreFiles;
 
-public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFactory {
+public class XlsxSpreadsheetFormatFactory extends ExcelSpreadsheetFormatFactoryBase {
   public static final String DEFAULT_FILE_EXTENSION = "xlsx";
 
-  private final ExcelConfigRegistry config;
+  public static final Set<String> SUPPORTED_FILE_EXTENSIONS = Set.of(DEFAULT_FILE_EXTENSION);
+
+  public static final MimeType DEFAULT_MIME_TYPE =
+      MimeType.of("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+  public static final Set<MimeType> SUPPORTED_MIME_TYPES = Set.of(DEFAULT_MIME_TYPE);
 
   public XlsxSpreadsheetFormatFactory() {
     this(new ExcelConfigRegistry());
   }
 
   public XlsxSpreadsheetFormatFactory(ExcelConfigRegistry config) {
-    this.config = requireNonNull(config);
-  }
-
-  @Override
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException {
-    if (source instanceof FileByteSource)
-      return readWorkbook(((FileByteSource) source).getFile());
-
-    WorkbookReader result = null;
-
-    File file = MoreFiles.createTempFile("workbook.", ".xlsx");
-    try {
-      try (OutputStream out = new FileOutputStream(file)) {
-        try (InputStream in = source.getInputStream()) {
-          in.transferTo(out);
-        }
-      }
-
-      WorkbookReader delegate = readWorkbook(file);
-
-      result = new ForwardingWorkbookReader(delegate) {
-        @Override
-        public void close() throws IOException {
-          try {
-            super.close();
-          } finally {
-            file.delete();
-          }
-        }
-      };
-    } finally {
-      if (result == null)
-        file.delete();
-    }
-
-    return result;
+    super(config, DEFAULT_FILE_EXTENSION, SUPPORTED_FILE_EXTENSIONS, DEFAULT_MIME_TYPE,
+        SUPPORTED_MIME_TYPES);
   }
 
   @Override
   public WorkbookReader readWorkbook(File file) throws IOException {
-    // This isn't ideal, but POI logs an error if the file is invalid, so let's
-    // try to catch as many issues up front as we can.
     if (!Excel.isPossiblyXlsxFile(file))
       throw new InvalidFileSpreadsheetException();
-
-    XSSFWorkbook workbook = null;
+    XSSFWorkbook workbook;
     try {
       workbook = new XSSFWorkbook(file);
-    } catch (InvalidFormatException | UnsupportedFileFormatException e) {
-      // To appease compiler warnings...
-      if (workbook != null)
-        workbook.close();
+    } catch (InvalidFormatException e) {
       throw new InvalidFileSpreadsheetException();
     }
-
     return new ExcelWorkbookReader(getConfig(), workbook);
   }
 
-  @Override
-  public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException {
-    final WorkbookReader workbook = readWorkbook(source);
-    final WorksheetReader delegate = workbook.getActiveWorksheet();
-    return new ForwardingWorksheetReader(delegate) {
-      @Override
-      public void close() throws IOException {
-        try {
-          super.close();
-        } finally {
-          workbook.close();
-        }
-      }
-    };
-  }
-
-  @Override
-  public WorksheetReader readActiveWorksheet(File file) throws IOException {
-    final WorkbookReader workbook = readWorkbook(file);
-    final WorksheetReader delegate = workbook.getActiveWorksheet();
-    return new ForwardingWorksheetReader(delegate) {
-      @Override
-      public void close() throws IOException {
-        try {
-          super.close();
-        } finally {
-          workbook.close();
-        }
-      }
-    };
-  }
 
   @Override
   public WorkbookWriter writeWorkbook(ByteSink sink) throws IOException {
@@ -164,51 +84,5 @@ public class XlsxSpreadsheetFormatFactory implements ExcelSpreadsheetFormatFacto
         }
       }
     };
-  }
-
-  @Override
-  public WorkbookWriter writeWorkbook(File file) throws IOException {
-    return writeWorkbook(new FileByteSink(file));
-  }
-
-  @Override
-  public WorksheetWriter writeActiveWorksheet(ByteSink sink) throws IOException {
-    final XSSFWorkbook workbook = new XSSFWorkbook();
-    final XSSFSheet worksheet = workbook.createSheet("main");
-    final WorksheetWriter delegate = new ExcelWorksheetWriter(getConfig(), worksheet, 0);
-    return new ForwardingWorksheetWriter(delegate) {
-      @Override
-      public void close() throws IOException {
-        try {
-          try (OutputStream out = sink.getOutputStream()) {
-            workbook.write(out);
-          }
-        } finally {
-          try {
-            super.close();
-          } finally {
-            workbook.close();
-          }
-        }
-      }
-    };
-  }
-
-  @Override
-  public WorksheetWriter writeActiveWorksheet(File file) throws IOException {
-    return writeActiveWorksheet(new FileByteSink(file));
-  }
-
-  /**
-   * @return the config
-   */
-  @Override
-  public ExcelConfigRegistry getConfig() {
-    return config;
-  }
-
-  @Override
-  public String getDefaultFileExtension() {
-    return DEFAULT_FILE_EXTENSION;
   }
 }

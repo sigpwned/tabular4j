@@ -22,11 +22,9 @@ package com.sigpwned.tabular4j.csv.write;
 import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
 import com.sigpwned.csv4j.CsvFormat;
 import com.sigpwned.csv4j.write.CsvWriter;
 import com.sigpwned.tabular4j.csv.CsvConfigRegistry;
-import com.sigpwned.tabular4j.csv.util.Csv;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.CharSink;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
@@ -36,6 +34,7 @@ public class CsvWorkbookWriter implements WorkbookWriter {
   private final CsvConfigRegistry config;
   private final CharSink sink;
   private final CsvFormat format;
+  private String sheetName;
 
   public CsvWorkbookWriter(CsvConfigRegistry config, ByteSink sink, CsvFormat format) {
     this(config, sink.asCharSink(StandardCharsets.UTF_8), format);
@@ -49,8 +48,11 @@ public class CsvWorkbookWriter implements WorkbookWriter {
 
   @Override
   public WorksheetWriter getWorksheet(String name) throws IOException {
-    if (!name.equals(Csv.WORKSHEET_NAME))
-      throw new NoSuchElementException();
+    if (name == null)
+      throw new NullPointerException();
+    if (sheetName != null && !name.equals(sheetName))
+      throw new IllegalStateException("CSV workbooks only support one sheet");
+    sheetName = name;
     return new CsvWorksheetWriter(getConfig(), new CsvWriter(getFormat(), getSink().getWriter()));
   }
 

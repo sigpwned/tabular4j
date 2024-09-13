@@ -38,6 +38,7 @@ import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetReader;
 import com.sigpwned.tabular4j.forwarding.ForwardingWorksheetWriter;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
+import com.sigpwned.tabular4j.mime.MimeType;
 import com.sigpwned.tabular4j.model.WorkbookReader;
 import com.sigpwned.tabular4j.model.WorkbookWriter;
 import com.sigpwned.tabular4j.model.WorksheetReader;
@@ -78,6 +79,11 @@ public class TestSpreadsheetFormatFactory implements SpreadsheetFormatFactory {
   @Override
   public String getDefaultFileExtension() {
     return "test";
+  }
+
+  @Override
+  public MimeType getDefaultMimeType() {
+    return MimeType.of("application", "test");
   }
 
   /**

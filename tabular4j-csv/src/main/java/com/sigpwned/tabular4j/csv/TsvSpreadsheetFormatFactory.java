@@ -24,23 +24,23 @@ import com.sigpwned.tabular4j.SpreadsheetFormatFactory;
 import com.sigpwned.tabular4j.csv.util.Csv;
 import com.sigpwned.tabular4j.mime.MimeType;
 
-public class CsvSpreadsheetFormatFactory extends CsvFormatSpreadsheetFormatFactoryBase
+public class TsvSpreadsheetFormatFactory extends CsvFormatSpreadsheetFormatFactoryBase
     implements SpreadsheetFormatFactory {
-  public static final String DEFAULT_FILE_EXTENSION = "csv";
+  public static final String DEFAULT_FILE_EXTENSION = "tsv";
 
-  public static final Set<String> SUPPORTED_FILE_EXTENSIONS = Set.of(DEFAULT_FILE_EXTENSION);
+  public static final Set<String> SUPPORTED_FILE_EXTENSIONS = Set.of(DEFAULT_FILE_EXTENSION, "tab");
 
-  public static final MimeType DEFAULT_MIME_TYPE = MimeType.of("text", "csv");
+  public static final MimeType DEFAULT_MIME_TYPE = MimeType.of("text", "tsv");
 
   public static final Set<MimeType> SUPPORTED_MIME_TYPES =
-      Set.of(DEFAULT_MIME_TYPE, MimeType.of("application", "csv"));
+      Set.of(DEFAULT_MIME_TYPE, MimeType.of("text", "tab-separated-values"));
 
-  public CsvSpreadsheetFormatFactory() {
+  public TsvSpreadsheetFormatFactory() {
     this(new CsvConfigRegistry());
   }
 
-  public CsvSpreadsheetFormatFactory(CsvConfigRegistry config) {
-    super(config, Csv.STANDARD_FILE_FORMAT, DEFAULT_FILE_EXTENSION, SUPPORTED_FILE_EXTENSIONS,
+  public TsvSpreadsheetFormatFactory(CsvConfigRegistry config) {
+    super(config, Csv.TSV_FILE_FORMAT, DEFAULT_FILE_EXTENSION, SUPPORTED_FILE_EXTENSIONS,
         DEFAULT_MIME_TYPE, SUPPORTED_MIME_TYPES);
   }
 }

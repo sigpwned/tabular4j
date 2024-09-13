@@ -20,7 +20,9 @@
 package com.sigpwned.tabular4j.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 
@@ -52,6 +54,23 @@ public final class MoreFiles {
         throw new IOException("Failed to set temporary file write permissions");
       if (!result.setExecutable(false))
         throw new IOException("Failed to set temporary file execution permissions");
+    }
+    return result;
+  }
+
+  /**
+   * Read the first {@code len} bytes from the given file. If the file is smaller than {@code len},
+   * the entire file is read.
+   * 
+   * @param file The file to read
+   * @param len The number of bytes to read
+   * @return The bytes read
+   * @throws IOException if an I/O error
+   */
+  public static byte[] readNBytes(File file, int len) throws IOException {
+    byte[] result;
+    try (InputStream in = new FileInputStream(file)) {
+      result = in.readNBytes(len);
     }
     return result;
   }

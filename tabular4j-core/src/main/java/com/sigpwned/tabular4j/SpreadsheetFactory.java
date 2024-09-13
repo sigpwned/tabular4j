@@ -24,13 +24,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.ServiceLoader;
-import java.util.stream.IntStream;
 import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.exception.UnrecognizedFormatSpreadsheetException;
 import com.sigpwned.tabular4j.io.ByteSink;
 import com.sigpwned.tabular4j.io.ByteSource;
+import com.sigpwned.tabular4j.io.SpreadsheetSink;
+import com.sigpwned.tabular4j.io.SpreadsheetSource;
 import com.sigpwned.tabular4j.model.TabularWorkbookReader;
 import com.sigpwned.tabular4j.model.TabularWorkbookWriter;
 import com.sigpwned.tabular4j.model.TabularWorksheetHeaderWriter;
@@ -62,18 +62,13 @@ public class SpreadsheetFactory {
   }
 
   /**
-   * If there is already a registered {@link SpreadsheetFormatFactory} for the given factory's file
-   * extension, then the given factory replaces it. Otherwise, the given factory is added.
+   * Add a new {@link SpreadsheetFormatFactory format} to the list of known formats. The format is
+   * added to the list in order of its {@link SpreadsheetFormatFactory#getPriority() priority}. If
+   * two formats have the same priority, then the relative order of the formats is not specified.
    */
   public void register(SpreadsheetFormatFactory format) {
-    OptionalInt index = IntStream.range(0, formats.size()).filter(
-        i -> getFormats().get(i).getDefaultFileExtension().equals(format.getDefaultFileExtension()))
-        .findFirst();
-    if (index.isPresent()) {
-      formats.set(index.getAsInt(), format);
-    } else {
-      formats.add(format);
-    }
+    formats.add(format);
+    formats.sort((a, b) -> -Integer.compare(a.getPriority(), b.getPriority()));
   }
 
   public Optional<SpreadsheetFormatFactory> findFormatByDefaultFileExtension(
@@ -82,55 +77,108 @@ public class SpreadsheetFactory {
         .filter(f -> f.getDefaultFileExtension().equals(defaultFileExtension)).findFirst();
   }
 
-  public WorkbookReader readWorkbook(ByteSource source) throws IOException {
-    WorkbookReader result = null;
+  public WorkbookReader readWorkbook(SpreadsheetSource source) throws IOException {
     for (SpreadsheetFormatFactory format : getFormats()) {
       try {
-        result = format.readWorkbook(source);
-        break;
+        return format.readWorkbook(source);
       } catch (InvalidFileSpreadsheetException e) {
         // This is OK. It's just not in the given format.
       }
     }
-    if (result == null)
+    if (source.getMimeType().isEmpty() && source.getFileExtension().isEmpty())
       throw new InvalidFileSpreadsheetException();
-    return result;
+    return readWorkbook(source.getBytes());
+  }
+
+  public WorkbookReader readWorkbook(ByteSource source) throws IOException {
+    for (SpreadsheetFormatFactory format : getFormats()) {
+      try {
+        return format.readWorkbook(source);
+      } catch (InvalidFileSpreadsheetException e) {
+        // This is OK. It's just not in the given format.
+      }
+    }
+    throw new InvalidFileSpreadsheetException();
+  }
+
+  public WorksheetReader readActiveWorksheet(SpreadsheetSource source) throws IOException {
+    for (SpreadsheetFormatFactory format : getFormats()) {
+      try {
+        return format.readActiveWorksheet(source);
+      } catch (InvalidFileSpreadsheetException e) {
+        // This is OK. It's just not in the given format.
+      }
+    }
+    if (source.getMimeType().isEmpty() && source.getFileExtension().isEmpty())
+      throw new InvalidFileSpreadsheetException();
+    return readActiveWorksheet(source.getBytes());
   }
 
   public WorksheetReader readActiveWorksheet(ByteSource source) throws IOException {
-    WorksheetReader result = null;
     for (SpreadsheetFormatFactory format : getFormats()) {
       try {
-        result = format.readActiveWorksheet(source);
-        break;
+        return format.readActiveWorksheet(source);
       } catch (InvalidFileSpreadsheetException e) {
         // This is OK. It's just not in the given format.
       }
     }
-    if (result == null)
-      throw new InvalidFileSpreadsheetException();
-    return result;
+    throw new InvalidFileSpreadsheetException();
+  }
+
+  public WorkbookWriter writeWorkbook(SpreadsheetSink sink) throws IOException {
+    for (SpreadsheetFormatFactory format : getFormats()) {
+      try {
+        return format.writeWorkbook(sink);
+      } catch (UnrecognizedFormatSpreadsheetException e) {
+        // This is OK. It's just not in the given format.
+      }
+    }
+    if (sink.getMimeType().isEmpty())
+      throw new UnrecognizedFormatSpreadsheetException(sink.getFileExtension());
+    return writeWorkbook(sink.getBytes(), sink.getFileExtension());
   }
 
   public WorkbookWriter writeWorkbook(ByteSink sink, String fileExtension) throws IOException {
     if (fileExtension == null)
       throw new NullPointerException();
-    return this.findFormatByDefaultFileExtension(fileExtension)
+    return findFormatByDefaultFileExtension(fileExtension)
         .orElseThrow(() -> new UnrecognizedFormatSpreadsheetException(fileExtension))
         .writeWorkbook(sink);
+  }
+
+  public WorksheetWriter writeActiveWorksheet(SpreadsheetSink sink) throws IOException {
+    for (SpreadsheetFormatFactory format : getFormats()) {
+      try {
+        return format.writeActiveWorksheet(sink);
+      } catch (UnrecognizedFormatSpreadsheetException e) {
+        // This is OK. It's just not in the given format.
+      }
+    }
+    if (sink.getMimeType().isEmpty())
+      throw new UnrecognizedFormatSpreadsheetException(sink.getFileExtension());
+    return writeActiveWorksheet(sink.getBytes(), sink.getFileExtension());
   }
 
   public WorksheetWriter writeActiveWorksheet(ByteSink sink, String fileExtension)
       throws IOException {
     if (fileExtension == null)
       throw new NullPointerException();
-    return this.findFormatByDefaultFileExtension(fileExtension)
+    return findFormatByDefaultFileExtension(fileExtension)
         .orElseThrow(() -> new UnrecognizedFormatSpreadsheetException(fileExtension))
         .writeActiveWorksheet(sink);
   }
 
+  public TabularWorkbookReader readTabularWorkbook(SpreadsheetSource source) throws IOException {
+    return new TabularWorkbookReader(readWorkbook(source));
+  }
+
   public TabularWorkbookReader readTabularWorkbook(ByteSource source) throws IOException {
     return new TabularWorkbookReader(readWorkbook(source));
+  }
+
+  public TabularWorksheetReader readActiveTabularWorksheet(SpreadsheetSource source)
+      throws IOException {
+    return new TabularWorksheetReader(readActiveWorksheet(source));
   }
 
   public TabularWorksheetReader readActiveTabularWorksheet(ByteSource source) throws IOException {
