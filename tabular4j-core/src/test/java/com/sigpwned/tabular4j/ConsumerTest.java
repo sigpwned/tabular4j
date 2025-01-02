@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.Test;
-import com.google.common.io.Resources;
 import com.sigpwned.tabular4j.consumer.TabularWorkbookConsumer;
 import com.sigpwned.tabular4j.consumer.TabularWorksheetConsumer;
 import com.sigpwned.tabular4j.consumer.WorkbookConsumer;
@@ -191,6 +190,7 @@ public abstract class ConsumerTest {
   }
 
   private ByteSource getByteSource() {
-    return new UrlByteSource(Resources.getResource("mlb_players_2021." + fileExtension));
+    return new UrlByteSource(Thread.currentThread().getContextClassLoader()
+        .getResource("mlb_players_2021." + fileExtension));
   }
 }
