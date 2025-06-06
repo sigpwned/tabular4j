@@ -21,15 +21,19 @@ package com.sigpwned.tabular4j.csv;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import com.sigpwned.tabular4j.csv.util.MoreChardet;
 import com.sigpwned.tabular4j.exception.InvalidFileSpreadsheetException;
 import com.sigpwned.tabular4j.model.WorksheetCellDefinition;
 import com.sigpwned.tabular4j.model.WorksheetReader;
@@ -111,5 +115,25 @@ public class CsvTest {
   public void xlsNotAcceptableTest() throws IOException {
     final URL url = getClass().getResource("example.xls");
     new CsvSpreadsheetFormatFactory().readWorkbook(url::openStream);
+  }
+
+  @Test
+  public void bomDiscardTest() throws IOException {
+    final URL url = getClass().getResource("keywords.csv");
+
+    // The file should have a UTF-8 BOM
+    try (BufferedReader r =
+        new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))) {
+      // Make sure the BOM is discarded
+      String line = r.readLine();
+      assertThat(line, is("\uFEFFkeyword,interest"));
+    }
+
+    // The decoded character stream should not have a BOM
+    try (BufferedReader r = new BufferedReader(MoreChardet.decode(url::openStream).getReader())) {
+      // Make sure the BOM is discarded
+      String line = r.readLine();
+      assertThat(line, is("keyword,interest"));
+    }
   }
 }
