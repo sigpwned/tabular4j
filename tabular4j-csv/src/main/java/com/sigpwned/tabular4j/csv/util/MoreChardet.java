@@ -21,11 +21,14 @@ package com.sigpwned.tabular4j.csv.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.sigpwned.chardet4j.ByteOrderMark;
 import com.sigpwned.chardet4j.Chardet;
+import com.sigpwned.chardet4j.io.BomAwareInputStream;
 import com.sigpwned.tabular4j.io.ByteSource;
 import com.sigpwned.tabular4j.io.CharSource;
 
@@ -64,15 +67,38 @@ public final class MoreChardet {
 
     if (buf.length == 0)
       return Reader::nullReader;
-
-    final Charset charset = Chardet.detectCharset(buf, declaredEncoding).orElse(null);
-    if (charset == null)
+    
+    final Charset detectedCharset = Chardet.detectCharset(buf, declaredEncoding).orElse(null);
+    if (detectedCharset == null)
       throw new IOException("failed to detect charset");
 
-    if (!isTextHeuristic(buf, charset))
+    if (!isTextHeuristic(buf, detectedCharset))
       throw new IOException("data does not appear to be text");
 
-    return source.asCharSource(charset);
+    return new CharSource() {
+      @Override
+      public Reader getReader() throws IOException {
+        Reader result = null;
+
+        final BomAwareInputStream in = BomAwareInputStream.detect(source.getInputStream());
+        try {
+          if (in.bom().isPresent()) {
+            final Charset bomCharset = in.bom().map(ByteOrderMark::getCharset).orElseThrow();
+            if (!bomCharset.equals(detectedCharset)) {
+              // This should never happen, since chardet4j always trusts the BOM if it exists.
+              throw new IOException("detected encoding " + detectedCharset
+                  + " does not match BOM encoding " + in.bom().get().getCharset());
+            }
+          }
+          result = new InputStreamReader(in, detectedCharset);
+        } finally {
+          if (result == null)
+            in.close();
+        }
+
+        return result;
+      }
+    };
   }
 
   /**
