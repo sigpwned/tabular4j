@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.sigpwned</groupId>
         <artifactId>tabular4j</artifactId>
-        <version>0.0.0-b4-SNAPSHOT</version>
+        <version>0.0.0-b4</version>
     </parent>
     <artifactId>tabular4j-bom</artifactId>
     <name>tabular4j-bom</name>
@@ -13,17 +13,17 @@
             <dependency>
                 <groupId>com.sigpwned</groupId>
                 <artifactId>tabular4j-core</artifactId>
-                <version>0.0.0-b4-SNAPSHOT</version>
+                <version>0.0.0-b4</version>
             </dependency>
             <dependency>
                 <groupId>com.sigpwned</groupId>
                 <artifactId>tabular4j-csv</artifactId>
-                <version>0.0.0-b4-SNAPSHOT</version>
+                <version>0.0.0-b4</version>
             </dependency>
             <dependency>
                 <groupId>com.sigpwned</groupId>
                 <artifactId>tabular4j-excel</artifactId>
-                <version>0.0.0-b4-SNAPSHOT</version>
+                <version>0.0.0-b4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
