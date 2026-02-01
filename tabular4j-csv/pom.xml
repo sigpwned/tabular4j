@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.sigpwned</groupId>
             <artifactId>chardet4j</artifactId>
-            <version>77.1.0</version>
+            <version>78.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.sigpwned</groupId>
